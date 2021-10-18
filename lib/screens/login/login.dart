@@ -10,15 +10,14 @@ import 'package:rentopolis/widgets/edited_password_field.dart';
 import 'package:rentopolis/widgets/edited_text_field.dart';
 
 class LoginScreen extends GetWidget<LoginConroller> {
-  final TextEditingController _emailController = TextEditingController();
-  final TextEditingController _passwordController = TextEditingController();
-
   LoginScreen({Key? key}) : super(key: key);
+
+  final PasswordController passwordController = Get.put(PasswordController());
+  final LoginConroller loginConroller = Get.put(LoginConroller());
   @override
   Widget build(BuildContext context) {
     var _size = MediaQuery.of(context).size;
-    final PasswordController passwordController = Get.put(PasswordController());
-    var x='';
+
     return Center(
       child: SingleChildScrollView(
         reverse: true,
@@ -39,18 +38,22 @@ class LoginScreen extends GetWidget<LoginConroller> {
             EditedTextField(
               hintText: 'Enter Email ID',
               prefixIcon: Icon(Icons.mail),
-              textEditingController: _emailController,
+              textEditingController: loginConroller.emailController,
               inputType: TextInputType.emailAddress,
-              variable: x,
+              variable: loginConroller.email,
+              fromWhich: 'login',
             ),
             Obx(
               () => EditedPasswordField(
-                  hintText: 'Enter Password',
-                  prefixIcon: Icon(Icons.vpn_key),
-                  textEditingController: _passwordController,
-                  suffixIcon1: Icon(Icons.visibility),
-                  suffixIcon2: Icon(Icons.visibility_off),
-                  obscureText: passwordController.passwordVisible.value),
+                hintText: 'Enter Password',
+                prefixIcon: Icon(Icons.vpn_key),
+                textEditingController: loginConroller.passwordController,
+                suffixIcon1: Icon(Icons.visibility),
+                suffixIcon2: Icon(Icons.visibility_off),
+                obscureText: passwordController.passwordVisible.value,
+                variable: loginConroller.password,
+                fromWhich: 'login',
+              ),
             ),
             Align(
               alignment: Alignment.centerRight,

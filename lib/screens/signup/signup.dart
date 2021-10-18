@@ -6,6 +6,7 @@ import 'package:rentopolis/controllers/internet_controller.dart';
 import 'package:rentopolis/controllers/password_controller.dart';
 import 'package:rentopolis/controllers/radio_button_controller.dart';
 import 'package:rentopolis/controllers/signup_controller.dart';
+import 'package:rentopolis/screens/login/login.dart';
 import 'package:rentopolis/screens/no_internet/no_internet.dart';
 import 'package:rentopolis/screens/signup/otp_verification.dart';
 import 'package:rentopolis/widgets/edited_password_field.dart';
@@ -77,31 +78,34 @@ class SignupWidget extends GetWidget<SignUpController> {
               textEditingController: signUpController.nameController,
               inputType: TextInputType.name,
               variable: signUpController.name,
+              fromWhich: 'signup',
             ),
             EditedTextField(
               hintText: 'Enter Email ID',
               prefixIcon: Icon(Icons.mail),
-              textEditingController: email,
+              textEditingController: signUpController.emailController,
               inputType: TextInputType.emailAddress,
               variable: signUpController.email,
+              fromWhich: 'signup',
             ),
             Obx(() => EditedPasswordField(
-                hintText: 'Enter Password',
-                prefixIcon: Icon(Icons.vpn_key),
-                textEditingController: signUpController.passwordController,
-                suffixIcon1: Icon(Icons.visibility),
-                suffixIcon2: Icon(Icons.visibility_off),
-                obscureText: passwordController.passwordVisible.value)),
+                  hintText: 'Enter Password',
+                  prefixIcon: Icon(Icons.vpn_key),
+                  textEditingController: signUpController.passwordController,
+                  suffixIcon1: Icon(Icons.visibility),
+                  suffixIcon2: Icon(Icons.visibility_off),
+                  obscureText: passwordController.passwordVisible.value,
+                  variable: signUpController.password,
+                  fromWhich: 'signup',
+                )),
             EditedTextField(
               hintText: 'Enter Phone No.',
               prefixIcon: Icon(Icons.phone),
               textEditingController: signUpController.phoneController,
               inputType: TextInputType.phone,
               variable: signUpController.phone,
+              fromWhich: 'signup',
             ),
-            // SizedBox(
-            //   height: _size.height * .05,
-            // ),
             Padding(
               padding: const EdgeInsets.all(15.0),
               child: Text(
@@ -109,7 +113,6 @@ class SignupWidget extends GetWidget<SignUpController> {
                 style: mainFont(fontSize: 20),
               ),
             ),
-            //  Obx(() => Text('${signUpController.emailController.text}')),
             Padding(
               padding: const EdgeInsets.all(15.0),
               child: Row(
@@ -125,8 +128,7 @@ class SignupWidget extends GetWidget<SignUpController> {
               height: _size.height * .07,
               child: ElevatedButton(
                 onPressed: () {
-                  Get.to(OTPVerification(), arguments: email.text);
-                  signUpController.pp();
+                  Get.to(OTPVerification());
                 },
                 child: Text(
                   'Sign Up',
@@ -134,16 +136,26 @@ class SignupWidget extends GetWidget<SignUpController> {
                 ),
               ),
             ),
-            TextButton(
-              onPressed: () {
-                Get.to(Signup());
-              },
-              child: Text(
-                'Create a new account',
-                style: mainFont(
-                    fontSize: 15, fontWeight: FontWeight.bold, color: teal),
-              ),
-            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  "Already have an account?",
+                  style: mainFont(fontSize: 15, color: grey),
+                ),
+                TextButton(
+                    onPressed: () {
+                      Get.back();
+                    },
+                    child: Text(
+                      'Login',
+                      style: mainFont(
+                          fontSize: 15,
+                          fontWeight: FontWeight.bold,
+                          color: teal),
+                    ))
+              ],
+            )
           ],
         ),
       ),
@@ -154,8 +166,6 @@ class SignupWidget extends GetWidget<SignUpController> {
     return OutlinedButton(
       onPressed: () {
         radioButtonController.changeIndex(index);
-        print(radioButtonController
-            .userType[radioButtonController.selectedIndex.value]);
       },
       style: OutlinedButton.styleFrom(
         shape:

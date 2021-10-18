@@ -66,6 +66,7 @@ class ForgetPasswordWidget extends StatelessWidget {
             textEditingController: _emailController,
             inputType: TextInputType.emailAddress,
             variable: x,
+            fromWhich: 'forgetpassword',
           ),
           SizedBox(
             height: _size.height * .05,

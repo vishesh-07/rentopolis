@@ -3,8 +3,8 @@ import 'package:get/get.dart';
 
 class SignUpController extends GetxController{
   final signUpFormKey=GlobalKey<FormState>();
-  late TextEditingController nameController,emailController, passwordController,phoneController;
-  var email='',name='',password='',phone='';
+  late TextEditingController emailController,nameController, passwordController,phoneController;
+  var email=''.obs,name=''.obs,password=''.obs,phone=''.obs;
   @override
   void onInit() {
     nameController=TextEditingController();
@@ -12,9 +12,12 @@ class SignUpController extends GetxController{
     passwordController=TextEditingController();
     phoneController=TextEditingController();
     super.onInit();
+    update();
   }
-  void pp(){
-    print(nameController.text.toString());
+  void updateText(var variable,String text){
+    variable.value=text;
+    print(text);
+    update();
   }
   @override
   void onClose() {
@@ -23,5 +26,6 @@ class SignUpController extends GetxController{
     passwordController.dispose();
     phoneController.dispose();
     super.onClose();
+    update();
   }
 }

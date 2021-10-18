@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:rentopolis/config/configuration.dart';
+import 'package:rentopolis/controllers/login_controller.dart';
 import 'package:rentopolis/controllers/password_controller.dart';
+import 'package:rentopolis/controllers/signup_controller.dart';
 
 class EditedPasswordField extends StatelessWidget {
   final PasswordController passwordController = Get.put(PasswordController());
@@ -11,18 +13,30 @@ class EditedPasswordField extends StatelessWidget {
   late Icon suffixIcon1;
   late Icon suffixIcon2;
   late bool obscureText;
+  late var variable;
+  late String fromWhich;
   EditedPasswordField(
       {required this.hintText,
       required this.prefixIcon,
       required this.textEditingController,
       required this.suffixIcon1,
       required this.suffixIcon2,
-      required this.obscureText});
+      required this.obscureText,
+      required this.variable,
+      required this.fromWhich});
+  SignUpController signUpController = Get.put(SignUpController());
+  LoginConroller loginConroller = Get.put(LoginConroller());
+
   @override
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.all(15.0),
       child: TextFormField(
+        onChanged: (value) {
+          (fromWhich == 'signup')
+              ? signUpController.updateText(variable, value)
+              : loginConroller.updateText(variable, value);
+        },
         obscureText: !obscureText,
         style: mainFont(fontSize: 20),
         decoration: InputDecoration(

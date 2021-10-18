@@ -1,27 +1,33 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:rentopolis/config/configuration.dart';
+import 'package:rentopolis/controllers/login_controller.dart';
+import 'package:rentopolis/controllers/signup_controller.dart';
 
-class EditedTextField extends StatelessWidget {
+class EditedTextField extends StatelessWidget{
   late String hintText;
   late Icon prefixIcon;
   late TextEditingController textEditingController;
   late TextInputType inputType;
   late var variable;
+  late String fromWhich;
   EditedTextField(
       {required this.hintText,
       required this.prefixIcon,
       required this.textEditingController,
-      required this.inputType,required this.variable});
+      required this.inputType,required this.variable,required this.fromWhich});
+      SignUpController signUpController=Get.put(SignUpController());
+      LoginConroller loginConroller=Get.put(LoginConroller());
   @override
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.all(15.0),
       child: TextFormField(
+        onChanged: (value){
+          (fromWhich=='signup')? signUpController.updateText(variable,value):loginConroller.updateText(variable, value);
+        },
         maxLength:
             (inputType == TextInputType.phone) ? 10 : TextField.noMaxLength,
-        // onSaved: (value) {
-        //   variable=value;
-        // },
         keyboardType: inputType,
         style: mainFont(fontSize: 20),
         decoration: InputDecoration(

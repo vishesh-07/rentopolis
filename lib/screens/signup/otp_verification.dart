@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:rentopolis/config/configuration.dart';
 import 'package:rentopolis/controllers/internet_controller.dart';
+import 'package:rentopolis/controllers/radio_button_controller.dart';
 import 'package:rentopolis/controllers/signup_controller.dart';
 import 'package:rentopolis/screens/no_internet/no_internet.dart';
 
@@ -22,13 +23,12 @@ class OTPVerification extends StatelessWidget {
 class OTPWidget extends StatelessWidget {
   OTPWidget({Key? key}) : super(key: key);
   final SignUpController signUpController = Get.put(SignUpController());
+  final RadioButtonController  radioButtonController=Get.put(RadioButtonController());
   @override
   Widget build(BuildContext context) {
-    return Container(
-      child: Center(
-        child: Text('${Get.arguments.length}',
-            style: mainFont(fontSize: 30)),
-      ),
+    return Center(
+      child:Text(signUpController.password.value,
+          style: mainFont(fontSize: 30)),
     );
   }
 }

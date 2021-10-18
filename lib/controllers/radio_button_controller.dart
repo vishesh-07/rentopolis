@@ -12,7 +12,6 @@ class RadioButtonController extends GetxController {
 
   void changeIndex(int index) {
     selectedIndex.value = index;
-    print(userType[selectedIndex.value]);
     update();
   }
 
