@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "489341652407",
+    "project_id": "rentopolis-15009",
+    "storage_bucket": "rentopolis-15009.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:489341652407:android:7def08267919a3a44e2c32",
+        "android_client_info": {
+          "package_name": "com.example.rentopolis"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "489341652407-qs03kg52jb701rbdterlb1kf3a2ta1pa.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDC7lGNa7p1QV6Q6XqcMuRncC1bw3vG648"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "489341652407-qs03kg52jb701rbdterlb1kf3a2ta1pa.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
