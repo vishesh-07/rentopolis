@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:rentopolis/config/configuration.dart';
+import 'package:rentopolis/controllers/forget_password_controller.dart';
 import 'package:rentopolis/controllers/login_controller.dart';
 import 'package:rentopolis/controllers/signup_controller.dart';
 
@@ -18,13 +19,14 @@ class EditedTextField extends StatelessWidget{
       required this.inputType,required this.variable,required this.fromWhich});
       SignUpController signUpController=Get.put(SignUpController());
       LoginConroller loginConroller=Get.put(LoginConroller());
+      ForgetPasswordController forgetPasswordController=Get.put(ForgetPasswordController());
   @override
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.all(15.0),
       child: TextFormField(
         onChanged: (value){
-          (fromWhich=='signup')? signUpController.updateText(variable,value):loginConroller.updateText(variable, value);
+          (fromWhich=='signup')? signUpController.updateText(variable,value):((fromWhich=='login')?loginConroller.updateText(variable, value):forgetPasswordController.updateText(variable, value));
         },
         maxLength:
             (inputType == TextInputType.phone) ? 10 : TextField.noMaxLength,

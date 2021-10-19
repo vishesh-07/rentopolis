@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 import 'package:rentopolis/config/configuration.dart';
+import 'package:rentopolis/controllers/forget_password_controller.dart';
 import 'package:rentopolis/controllers/internet_controller.dart';
 import 'package:rentopolis/screens/no_internet/no_internet.dart';
 import 'package:get/get.dart';
@@ -15,20 +16,19 @@ class ForgetPassword extends StatelessWidget {
       body: GetBuilder<InternetController>(
           builder: (builder) => (_internetController.connectionType == 0.obs)
               ? const NoInternet()
-              : const ForgetPasswordWidget()),
+              :  ForgetPasswordWidget()),
     );
   }
 }
 
 class ForgetPasswordWidget extends StatelessWidget {
-  const ForgetPasswordWidget({
+   ForgetPasswordWidget({
     Key? key,
   }) : super(key: key);
+  ForgetPasswordController forgetPasswordController=Get.put(ForgetPasswordController());
   @override
   Widget build(BuildContext context) {
     var _size = MediaQuery.of(context).size;
-    TextEditingController _emailController = TextEditingController();
-    var x='';
     return SingleChildScrollView(
       reverse: true,
       child: Column(
@@ -63,9 +63,9 @@ class ForgetPasswordWidget extends StatelessWidget {
           EditedTextField(
             hintText: 'Enter Email ID',
             prefixIcon: Icon(Icons.mail),
-            textEditingController: _emailController,
+            textEditingController: forgetPasswordController.emailController,
             inputType: TextInputType.emailAddress,
-            variable: x,
+            variable: forgetPasswordController.email,
             fromWhich: 'forgetpassword',
           ),
           SizedBox(

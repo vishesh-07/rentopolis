@@ -16,7 +16,6 @@ class SignUpController extends GetxController{
   }
   void updateText(var variable,String text){
     variable.value=text;
-    print(text);
     update();
   }
   @override
