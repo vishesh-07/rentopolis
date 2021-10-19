@@ -29,8 +29,8 @@ class LoginScreen extends GetWidget<LoginConroller> {
             Text('Login', style: mainFont(fontSize: 30, color: primaryBlack)),
             SizedBox(
               height: _size.height * .3,
-              child: Lottie.network(
-                  'https://assets6.lottiefiles.com/packages/lf20_vwCDpL.json'),
+              child: Lottie.asset(
+                  'assets/gif/login.json'),
             ),
             // SizedBox(
             //   height: _size.height * .1,

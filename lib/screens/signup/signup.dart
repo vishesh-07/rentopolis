@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:lottie/lottie.dart';
 import 'package:rentopolis/config/configuration.dart';
 import 'package:rentopolis/controllers/internet_controller.dart';
+import 'package:rentopolis/controllers/otp_controller.dart';
 import 'package:rentopolis/controllers/password_controller.dart';
 import 'package:rentopolis/controllers/radio_button_controller.dart';
 import 'package:rentopolis/controllers/signup_controller.dart';
@@ -35,6 +36,7 @@ class SignupWidget extends GetWidget<SignUpController> {
   final SignUpController signUpController = Get.put(SignUpController());
   final RadioButtonController radioButtonController =
       Get.put(RadioButtonController());
+  final OtpController otpController = Get.put(OtpController());
   TextEditingController email = TextEditingController();
   @override
   Widget build(BuildContext context) {
@@ -69,8 +71,7 @@ class SignupWidget extends GetWidget<SignUpController> {
             ),
             SizedBox(
               height: _size.height * .3,
-              child: Lottie.network(
-                  'https://assets10.lottiefiles.com/packages/lf20_ymbzgxgc.json'),
+              child: Lottie.asset('assets/gif/signup.json'),
             ),
             EditedTextField(
               hintText: 'Enter Name',
@@ -128,7 +129,42 @@ class SignupWidget extends GetWidget<SignUpController> {
               height: _size.height * .07,
               child: ElevatedButton(
                 onPressed: () {
-                  Get.to(OTPVerification());
+                  signUpController.isEmailValid(signUpController.email.value);
+                  signUpController.isNameValid(signUpController.name.value);
+                  signUpController
+                      .isPasswordValid(signUpController.password.value);
+                  signUpController.isPhoneValid(signUpController.phone.value);
+                  if (signUpController.emailVaild == true &&
+                      signUpController.nameVaild == true &&
+                      signUpController.passwordValid == true &&
+                      signUpController.phoneValid == true) {
+                    otpController.sendOTP();
+                    Get.snackbar("Email Verification",
+                        "A 6 digit pin has been sent to your email\n ${signUpController.email}",
+                        snackPosition: SnackPosition.BOTTOM,
+                        backgroundColor: grey,
+                        colorText: primaryWhite);
+                    Future.delayed(Duration(seconds: 2), () {
+                      Get.to(OTPVerification());
+                    });
+                  } else {
+                    bool email, name, phone, password;
+                    email = !signUpController.emailVaild.value;
+                    name = !signUpController.nameVaild.value;
+                    phone = !signUpController.phoneValid.value;
+                    password = !signUpController.passwordValid.value;
+                    String msg = '';
+                    msg += name ? 'Invalid Name\n' : '';
+                    msg += email ? 'Invalid Email ID\n' : '';
+                    msg += password ? 'Invalid Password\n' : '';
+                    msg += phone ? 'Invalid Phone Number\n' : '';
+                    Get.snackbar("Invalid Details", msg,
+                        snackPosition: SnackPosition.BOTTOM,
+                        backgroundColor: grey,
+                        colorText: primaryWhite);
+                  }
+
+                  // print(signUpController.email.value.l);
                 },
                 child: Text(
                   'Sign Up',
