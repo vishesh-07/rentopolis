@@ -9,6 +9,7 @@ import 'package:rentopolis/controllers/radio_button_controller.dart';
 import 'package:rentopolis/controllers/signup_controller.dart';
 import 'package:rentopolis/main.dart';
 import 'package:rentopolis/screens/no_internet/no_internet.dart';
+import 'package:rentopolis/services/login_signup_service.dart';
 
 class OTPVerification extends StatelessWidget {
   OTPVerification({Key? key}) : super(key: key);
@@ -30,6 +31,7 @@ class OTPWidget extends StatelessWidget {
   final RadioButtonController radioButtonController =
       Get.put(RadioButtonController());
   final OtpController otpController = Get.put(OtpController());
+  final LoginSignUpService loginSignUpService = LoginSignUpService();
   @override
   Widget build(BuildContext context) {
     var _size = MediaQuery.of(context).size;
@@ -108,10 +110,27 @@ class OTPWidget extends StatelessWidget {
             height: _size.height * .07,
             child: ElevatedButton(
               onPressed: () {
-                if (otpController.submitValid.value == true) {
-                  Get.offAll(InternetCheck());
+                // print(otpController.pinPutController.text);
+                // otpController.verify();
+                if (otpController.verify() == true) {
+                  loginSignUpService.signUpUser(
+                      signUpController.name.value,
+                      signUpController.email.value,
+                      signUpController.password.value,
+                      signUpController.phone.value,
+                      radioButtonController
+                          .userType[radioButtonController.selectedIndex.value]);
+                  Get.snackbar(
+                      "Success", 'You are now registered to rentopolis.',
+                      snackPosition: SnackPosition.BOTTOM,
+                      backgroundColor: grey,
+                      colorText: primaryWhite);
+                  Future.delayed(Duration(seconds: 2), () {
+                    Get.offAll(InternetCheck());
+                  });
                 } else {
-                  Get.snackbar("Invalid OTP", 'You have entered an invalid OTP',
+                  Get.snackbar(
+                      "Invalid OTP", 'You have entered an invalid OTP.',
                       snackPosition: SnackPosition.BOTTOM,
                       backgroundColor: grey,
                       colorText: primaryWhite);
@@ -129,7 +148,7 @@ class OTPWidget extends StatelessWidget {
                 padding: const EdgeInsets.all(8.0),
                 child: TextButton(
                     onPressed: () {
-                      otpController.sendOTP();
+                      otpController.sendOtp();
                       Get.snackbar("Email Verification",
                           "A 6 digit pin has been sent to your email\n ${signUpController.email}",
                           snackPosition: SnackPosition.BOTTOM,

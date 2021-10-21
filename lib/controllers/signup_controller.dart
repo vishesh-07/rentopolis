@@ -61,6 +61,14 @@ class SignUpController extends GetxController {
 
   @override
   void onClose() {
+    emailVaild.value = false;
+    nameVaild.value = false;
+    passwordValid.value = false;
+    phoneValid.value = false;
+    email.value = '';
+    name.value = '';
+    password.value = '';
+    phone.value = '';
     nameController.dispose();
     emailController.dispose();
     passwordController.dispose();

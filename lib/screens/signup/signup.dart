@@ -28,7 +28,7 @@ class Signup extends GetWidget<SignUpController> {
   }
 }
 
-class SignupWidget extends GetWidget<SignUpController> {
+class SignupWidget extends StatelessWidget {
   SignupWidget({
     Key? key,
   }) : super(key: key);
@@ -138,7 +138,7 @@ class SignupWidget extends GetWidget<SignUpController> {
                       signUpController.nameVaild == true &&
                       signUpController.passwordValid == true &&
                       signUpController.phoneValid == true) {
-                    otpController.sendOTP();
+                    otpController.sendOtp();
                     Get.snackbar("Email Verification",
                         "A 6 digit pin has been sent to your email\n ${signUpController.email}",
                         snackPosition: SnackPosition.BOTTOM,

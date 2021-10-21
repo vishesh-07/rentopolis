@@ -23,23 +23,22 @@ class OtpController extends GetxController {
     update();
   }
 
-  void sendOTP() async {
+  void sendOtp() async {
     bool result = await emailAuth.sendOtp(
-        recipientMail: signUpController.email.value, otpLength: 6);
-    if (result) {
-      submitValid.value = true;
-      update();
-    }
+        recipientMail: signUpController.email.value, otpLength: 5);
   }
 
-  void verify() {
-    
+  bool verify() {
+    var validOTP = emailAuth.validateOtp(
+        recipientMail: signUpController.email.value,
+        userOtp: pinPutController.value.text);
+    return validOTP;
   }
 
   @override
   void onClose() {
-    pinPutController.dispose();
     pinPutController.clear();
+    submitValid.value = false;
     super.onClose();
   }
 }
