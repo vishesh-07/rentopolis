@@ -4,8 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:rentopolis/config/configuration.dart';
 import 'package:rentopolis/controllers/internet_controller.dart';
+import 'package:rentopolis/screens/choice/choice.dart';
 import 'package:rentopolis/screens/no_internet/no_internet.dart';
-import 'package:rentopolis/screens/login/login.dart';
+import 'package:rentopolis/screens/login/tenant_login.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -51,7 +52,7 @@ class InternetCheck extends StatelessWidget {
       body: GetBuilder<InternetController>(
           builder: (builder) => (_internetController.connectionType == 0.obs)
               ? NoInternet()
-              : LoginScreen()),
+              : Choice()),
       // body: GetX<InternetController>(
       //   builder: (controller){
       //     return  controller.current==controller.noInternet.obs?const NoInternet():const LoginScreen();

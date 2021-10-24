@@ -3,13 +3,13 @@ import 'package:get/get.dart';
 import 'package:lottie/lottie.dart';
 import 'package:pinput/pin_put/pin_put.dart';
 import 'package:rentopolis/config/configuration.dart';
+import 'package:rentopolis/controllers/auth_controller.dart';
 import 'package:rentopolis/controllers/internet_controller.dart';
 import 'package:rentopolis/controllers/otp_controller.dart';
 import 'package:rentopolis/controllers/radio_button_controller.dart';
 import 'package:rentopolis/controllers/signup_controller.dart';
 import 'package:rentopolis/main.dart';
 import 'package:rentopolis/screens/no_internet/no_internet.dart';
-import 'package:rentopolis/services/login_signup_service.dart';
 
 class OTPVerification extends StatelessWidget {
   OTPVerification({Key? key}) : super(key: key);
@@ -31,7 +31,7 @@ class OTPWidget extends StatelessWidget {
   final RadioButtonController radioButtonController =
       Get.put(RadioButtonController());
   final OtpController otpController = Get.put(OtpController());
-  final LoginSignUpService loginSignUpService = LoginSignUpService();
+  final AuthController authController = Get.put(AuthController());
   @override
   Widget build(BuildContext context) {
     var _size = MediaQuery.of(context).size;
@@ -113,7 +113,7 @@ class OTPWidget extends StatelessWidget {
                 // print(otpController.pinPutController.text);
                 // otpController.verify();
                 if (otpController.verify() == true) {
-                  loginSignUpService.signUpUser(
+                  authController.signUpUser(
                       signUpController.name.value,
                       signUpController.email.value,
                       signUpController.password.value,

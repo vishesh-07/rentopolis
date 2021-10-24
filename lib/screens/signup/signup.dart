@@ -7,7 +7,7 @@ import 'package:rentopolis/controllers/otp_controller.dart';
 import 'package:rentopolis/controllers/password_controller.dart';
 import 'package:rentopolis/controllers/radio_button_controller.dart';
 import 'package:rentopolis/controllers/signup_controller.dart';
-import 'package:rentopolis/screens/login/login.dart';
+import 'package:rentopolis/screens/login/tenant_login.dart';
 import 'package:rentopolis/screens/no_internet/no_internet.dart';
 import 'package:rentopolis/screens/signup/otp_verification.dart';
 import 'package:rentopolis/widgets/edited_password_field.dart';

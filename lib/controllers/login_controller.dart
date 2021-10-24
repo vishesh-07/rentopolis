@@ -4,12 +4,22 @@ import 'package:get/get.dart';
 
 class LoginConroller extends GetxController{
   final FirebaseAuth _auth=FirebaseAuth.instance;
-   final TextEditingController emailController = TextEditingController();
-  final TextEditingController passwordController = TextEditingController();
+  late TextEditingController emailController,passwordController;
   var email=''.obs,password=''.obs;
+  @override
+  void onInit() {
+    emailController= TextEditingController();
+    passwordController= TextEditingController();
+    super.onInit();
+  }
   void updateText(var variable,String text){
     variable.value=text;
     update();
-    print(email);
+  }
+  @override
+  void onClose() {
+    email.value='';
+    password.value='';
+    super.onClose();
   }
 }
