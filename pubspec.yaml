@@ -45,6 +45,11 @@ dependencies:
   email_auth: ^1.0.0
   svg_icon: ^0.0.1
   carousel_slider: ^4.0.0
+  image_picker: ^0.8.4+3
+  firebase_storage: ^10.0.6
+  cached_network_image: ^3.1.0
+  geocode: ^1.0.1
+  google_maps_flutter: ^2.1.0
 dev_dependencies:
   flutter_test:
     sdk: flutter

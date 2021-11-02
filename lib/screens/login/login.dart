@@ -2,36 +2,38 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:lottie/lottie.dart';
 import 'package:rentopolis/config/configuration.dart';
+import 'package:rentopolis/controllers/auth_controller.dart';
+import 'package:rentopolis/controllers/data_controller.dart';
 import 'package:rentopolis/controllers/internet_controller.dart';
 import 'package:rentopolis/controllers/login_controller.dart';
-import 'package:rentopolis/controllers/auth_controller.dart';
 import 'package:rentopolis/controllers/password_controller.dart';
 import 'package:rentopolis/screens/forget_password/forget_password.dart';
+import 'package:rentopolis/screens/landlord/landlord_home.dart';
 import 'package:rentopolis/screens/no_internet/no_internet.dart';
 import 'package:rentopolis/screens/signup/signup.dart';
-import 'package:rentopolis/screens/tenant/tenant_home.dart';
 import 'package:rentopolis/widgets/edited_password_field.dart';
 import 'package:rentopolis/widgets/edited_text_field.dart';
 
-class TenantLogin extends StatelessWidget {
-  const TenantLogin({Key? key}) : super(key: key);
+class Login extends StatelessWidget {
+  const Login({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     final InternetController _internetController =
         Get.put(InternetController());
+    // final DataController dataController=Get.put(DataController());
     return Scaffold(
       // body: Obx(()=>_internetController.current==_internetController.noInternet?NoInternet():LoginScreen()),
       body: GetBuilder<InternetController>(
           builder: (builder) => (_internetController.connectionType == 0.obs)
               ? const NoInternet()
-              : TenantLoginScreen()),
+              : LoginScreen()),
     );
   }
 }
 
-class TenantLoginScreen extends GetWidget<LoginConroller> {
-  TenantLoginScreen({Key? key}) : super(key: key);
+class LoginScreen extends GetWidget<LoginConroller> {
+  LoginScreen({Key? key}) : super(key: key);
 
   final PasswordController passwordController = Get.put(PasswordController());
   final LoginConroller loginConroller = Get.put(LoginConroller());
@@ -48,8 +50,7 @@ class TenantLoginScreen extends GetWidget<LoginConroller> {
             SizedBox(
               height: _size.height * .05,
             ),
-            Text('Tenant Login',
-                style: mainFont(fontSize: 30, color: primaryBlack)),
+            Text('Login', style: mainFont(fontSize: 30, color: primaryBlack)),
             SizedBox(
               height: _size.height * .3,
               child: Lottie.asset('assets/gif/login.json'),
@@ -94,17 +95,8 @@ class TenantLoginScreen extends GetWidget<LoginConroller> {
               height: _size.height * .07,
               child: ElevatedButton(
                 onPressed: () {
-                  var result = authController.loginUser(
-                      loginConroller.email.value,
+                  authController.login(loginConroller.email.value,
                       loginConroller.password.value);
-                  if (result != null) {
-                    Get.to(TenantHome());
-                  } else {
-                    Get.snackbar("Error", 'Invalid User',
-                        snackPosition: SnackPosition.BOTTOM,
-                        backgroundColor: grey,
-                        colorText: primaryWhite);
-                  }
                 },
                 child: Text(
                   'Login',

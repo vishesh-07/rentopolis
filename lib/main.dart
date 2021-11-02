@@ -4,9 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:rentopolis/config/configuration.dart';
 import 'package:rentopolis/controllers/internet_controller.dart';
-import 'package:rentopolis/screens/choice/choice.dart';
+import 'package:rentopolis/screens/login/login.dart';
 import 'package:rentopolis/screens/no_internet/no_internet.dart';
-import 'package:rentopolis/screens/login/tenant_login.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -33,7 +32,7 @@ class MyApp extends StatelessWidget {
             ),
             debugShowCheckedModeBanner: false,
             // home: const NoInternet(),
-            home: InternetCheck(),
+            home: const Login(),
           );
         }
         return const CircularProgressIndicator();
@@ -41,46 +40,3 @@ class MyApp extends StatelessWidget {
     );
   }
 }
-
-class InternetCheck extends StatelessWidget {
-  InternetCheck({Key? key}) : super(key: key);
-  final InternetController _internetController = Get.put(InternetController());
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      // body: Obx(()=>_internetController.current==_internetController.noInternet?NoInternet():LoginScreen()),
-      body: GetBuilder<InternetController>(
-          builder: (builder) => (_internetController.connectionType == 0.obs)
-              ? NoInternet()
-              : Choice()),
-      // body: GetX<InternetController>(
-      //   builder: (controller){
-      //     return  controller.current==controller.noInternet.obs?const NoInternet():const LoginScreen();
-      //   },
-      // ),
-    );
-  }
-}
-// class InternetCheck extends StatefulWidget {
-//   const InternetCheck({ Key? key }) : super(key: key);
-
-//   @override
-//   _InternetCheckState createState() => _InternetCheckState();
-// }
-
-// class _InternetCheckState extends State<InternetCheck> {
-//   ConnectivityResult _result=ConnectivityResult.none,_hasConnection=ConnectivityResult.none;
-
-//   @override
-//   void initState() {
-//     super.initState();
-//     Connectivity().onConnectivityChanged.listen((result) {
-//       setState(()=>this._result=result);
-//      });
-//   }
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       body: _result==_hasConnection?const NoInternet():const LoginScreen(),
-//     );
-//   }
-// }

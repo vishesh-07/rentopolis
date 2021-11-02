@@ -2,14 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:lottie/lottie.dart';
 import 'package:rentopolis/config/configuration.dart';
+import 'package:rentopolis/controllers/auth_controller.dart';
 import 'package:rentopolis/controllers/internet_controller.dart';
-import 'package:rentopolis/controllers/otp_controller.dart';
 import 'package:rentopolis/controllers/password_controller.dart';
 import 'package:rentopolis/controllers/radio_button_controller.dart';
 import 'package:rentopolis/controllers/signup_controller.dart';
-import 'package:rentopolis/screens/login/tenant_login.dart';
 import 'package:rentopolis/screens/no_internet/no_internet.dart';
-import 'package:rentopolis/screens/signup/otp_verification.dart';
 import 'package:rentopolis/widgets/edited_password_field.dart';
 import 'package:rentopolis/widgets/edited_text_field.dart';
 
@@ -36,7 +34,8 @@ class SignupWidget extends StatelessWidget {
   final SignUpController signUpController = Get.put(SignUpController());
   final RadioButtonController radioButtonController =
       Get.put(RadioButtonController());
-  final OtpController otpController = Get.put(OtpController());
+      final AuthController authController = Get.put(AuthController());
+ 
   TextEditingController email = TextEditingController();
   @override
   Widget build(BuildContext context) {
@@ -138,15 +137,13 @@ class SignupWidget extends StatelessWidget {
                       signUpController.nameVaild == true &&
                       signUpController.passwordValid == true &&
                       signUpController.phoneValid == true) {
-                    otpController.sendOtp();
-                    Get.snackbar("Email Verification",
-                        "A 6 digit pin has been sent to your email\n ${signUpController.email}",
-                        snackPosition: SnackPosition.BOTTOM,
-                        backgroundColor: grey,
-                        colorText: primaryWhite);
-                    Future.delayed(Duration(seconds: 2), () {
-                      Get.to(OTPVerification());
-                    });
+                     authController.signUp(
+                      signUpController.email.value,
+                      signUpController.password.value,
+                      signUpController.name.value,
+                      signUpController.phone.value,
+                      radioButtonController
+                          .userType[radioButtonController.selectedIndex.value]);
                   } else {
                     bool email, name, phone, password;
                     email = !signUpController.emailVaild.value;

@@ -1,6 +1,9 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:rentopolis/config/configuration.dart';
+import 'package:rentopolis/controllers/auth_controller.dart';
+import 'package:rentopolis/controllers/data_controller.dart';
 import 'package:rentopolis/controllers/internet_controller.dart';
 import 'package:rentopolis/screens/no_internet/no_internet.dart';
 import 'package:rentopolis/screens/tenant/tenant_home_details.dart';
@@ -26,98 +29,158 @@ class TenantHome extends StatelessWidget {
 }
 
 class TenantHomeScreen extends StatelessWidget {
-  const TenantHomeScreen({Key? key}) : super(key: key);
+  TenantHomeScreen({Key? key}) : super(key: key);
+  AuthController authController = Get.put(AuthController());
 
+  final DataController dataController = Get.put(DataController());
   @override
   Widget build(BuildContext context) {
+    WidgetsBinding.instance!.addPostFrameCallback((timeStamp) {
+      dataController.getUplodedHouses();
+    });
     var _size = MediaQuery.of(context).size;
-    return SingleChildScrollView(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          SizedBox(
-            height: _size.height * .01,
-          ),
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                IconButton(
-                    onPressed: () {}, icon: SvgIcon('assets/icons/menu.svg')),
-                IconButton(onPressed: () {}, icon: Icon(Icons.sort_sharp)),
-              ],
-            ),
-          ),
-          Align(
-              alignment: Alignment.centerLeft,
-              child: Padding(
-                padding: const EdgeInsets.only(top: 8.0, left: 8.0),
-                child: Text('Hello User',
-                    style: mainFont(fontSize: 20, color: primaryBlack)),
-              )),
-          Align(
-            alignment: Alignment.centerLeft,
-            child: Padding(
-              padding: const EdgeInsets.only(left: 8.0, top: 4.0),
-              child: Text(
-                'Find your sweet home',
-                style: mainFont(fontSize: 25, fontWeight: FontWeight.bold),
-              ),
-            ),
-          ),
-          SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            child: Row(
-              children: [
-                FilterChip(
-                  size: _size,
-                  text: '2 Bedrooms',
-                ),
-                FilterChip(
-                  size: _size,
-                  text: 'Independent House',
-                ),
-                FilterChip(
-                  size: _size,
-                  text: 'Full Furnished',
-                ),
-                FilterChip(
-                  size: _size,
-                  text: 'Under 15000',
-                ),
-                FilterChip(
-                  size: _size,
-                  text: 'Near Hospital',
-                ),
-              ],
-            ),
-          ),
-          Column(
-            children: [
-              //! 1st house
-              HouseContainer(size: _size),
-              HouseContainer(size: _size),
-              HouseContainer(size: _size),
-              HouseContainer(size: _size),
-              //! 2nd house
-            ],
-          ),
-        ],
+    return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+      SizedBox(
+        height: _size.height * .01,
       ),
-    );
+      Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            IconButton(
+                onPressed: () {}, icon: SvgIcon('assets/icons/menu.svg')),
+            IconButton(onPressed: () {}, icon: Icon(Icons.sort_sharp)),
+          ],
+        ),
+      ),
+      Align(
+          alignment: Alignment.centerLeft,
+          child: Padding(
+            padding: const EdgeInsets.only(top: 8.0, left: 8.0),
+            child: Text('Hello ${authController.userData['name']}',
+                style: mainFont(fontSize: 20, color: primaryBlack)),
+          )),
+      Align(
+        alignment: Alignment.centerLeft,
+        child: Padding(
+          padding: const EdgeInsets.only(left: 8.0, top: 4.0),
+          child: Text(
+            'Find your sweet home',
+            style: mainFont(fontSize: 25, fontWeight: FontWeight.bold),
+          ),
+        ),
+      ),
+      SingleChildScrollView(
+        scrollDirection: Axis.horizontal,
+        child: Row(
+          children: [
+            FilterChip(
+              size: _size,
+              text: '2 Bedrooms',
+            ),
+            FilterChip(
+              size: _size,
+              text: 'Independent House',
+            ),
+            FilterChip(
+              size: _size,
+              text: 'Full Furnished',
+            ),
+            FilterChip(
+              size: _size,
+              text: 'Under 15000',
+            ),
+            FilterChip(
+              size: _size,
+              text: 'Near Hospital',
+            ),
+          ],
+        ),
+      ),
+      GetBuilder<DataController>(
+        builder: (controller) => controller.totalData.isEmpty
+            ? Center(
+                child: Text('😔 NO DATA FOUND 😔'),
+              )
+            : Expanded(
+                child: ListView.builder(
+                    itemCount: dataController.totalData.length,
+                    itemBuilder: (context, index) {
+                      return Column(children: [
+                        HouseContainer(
+                          size: _size,
+                          images: dataController.totalData[index].images,
+                          name: dataController.totalData[index].name,
+                          rent: dataController.totalData[index].rent.toString(),
+                          bedroom: dataController.totalData[index].bedroom
+                              .toString(),
+                          bathroom: dataController.totalData[index].bathroom
+                              .toString(),
+                          sqft: dataController.totalData[index].area.toString(),
+                          about: dataController.totalData[index].about,
+                          address: dataController.totalData[index].address,
+                          houseid: dataController.totalData[index].houseid.toString(),
+                          uid: dataController.totalData[index].uid,
+                          latilong: dataController.totalData[index].latilong,
+                        ),
+                        // HouseContainer(
+                        //     size: _size,
+                        //     images: dataController.totalData[index].images,
+                        //     name: dataController.totalData[index].name,
+                        //     rent:
+                        //         dataController.totalData[index].rent.toString(),
+                        //     bedroom: dataController.totalData[index].bedroom
+                        //         .toString(),
+                        //     bathroom: dataController.totalData[index].bathroom
+                        //         .toString(),
+                        //     sqft:
+                        //         dataController.totalData[index].area.toString(),
+                        //     about: dataController.totalData[index].about,
+                        //     address: dataController.totalData[index].address,
+                        //     houseid: dataController.totalData[index].houseid,
+                        //     uid: dataController.totalData[index].uid),
+                      ]);
+                    }),
+              ),
+      ),
+    ]);
   }
 }
 
 class HouseContainer extends StatelessWidget {
-  const HouseContainer({
-    Key? key,
-    required Size size,
-  })  : _size = size,
+  HouseContainer(
+      {Key? key,
+      required Size size,
+      required var images,
+      required var name,
+      required var rent,
+      required var bedroom,
+      required var bathroom,
+      required var sqft,
+      required var about,
+      required var address,
+      required var houseid,
+      required var uid,
+      required var latilong})
+      : _size = size,
+        _images = images,
+        _name = name,
+        _rent = rent,
+        _bedroom = bedroom,
+        _bathroom = bathroom,
+        _sqft = sqft,
+        _about = about,
+        _address = address,
+        _houseid = houseid,
+        _uid = uid,
+        _latilong = latilong,
         super(key: key);
 
   final Size _size;
-
+  final List<dynamic> _images, _latilong;
+  final  _houseid;
+  final  _name, _rent, _bedroom, _bathroom, _sqft, _about, _address, _uid;
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -134,21 +197,22 @@ class HouseContainer extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             ClipRRect(
-                borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(20.0),
-                    topRight: Radius.circular(20.0)),
-                child: Image.network('https://placeimg.com/640/480/any')),
-            HouseRowRent(name: 'Luxury House',rent: '20000',),
-            Row(children: <Widget>[
-              Icon(
-                Icons.location_on,
-                color: grey,
+              borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(20.0),
+                  topRight: Radius.circular(20.0)),
+              child: CachedNetworkImage(
+                imageUrl: _images[0],
+                height: _size.height * .4,
+                width: double.infinity,
+                placeholder: (context, url) =>
+                    const CircularProgressIndicator(),
+                errorWidget: (context, url, error) => const Icon(Icons.error),
               ),
-              Text(
-                "1.5 km from you",
-                style: mainFont(fontSize: 15, color: grey),
-              )
-            ]),
+            ),
+            HouseRowRent(
+              name: _name,
+              rent: _rent,
+            ),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
@@ -159,7 +223,7 @@ class HouseContainer extends StatelessWidget {
                     size: 20,
                     color: teal,
                   ),
-                  text: '3',
+                  text: _bedroom,
                 ),
                 CustomChipper(
                   size: _size,
@@ -168,7 +232,7 @@ class HouseContainer extends StatelessWidget {
                     size: 20,
                     color: teal,
                   ),
-                  text: '2',
+                  text: _bathroom,
                 ),
                 CustomChipper(
                   size: _size,
@@ -177,7 +241,7 @@ class HouseContainer extends StatelessWidget {
                     size: 20,
                     color: teal,
                   ),
-                  text: '1200 sqft',
+                  text: _sqft,
                 ),
               ],
             ),
@@ -185,9 +249,22 @@ class HouseContainer extends StatelessWidget {
               padding: const EdgeInsets.all(8.0),
               child: ElevatedButton(
                 onPressed: () {
-                  Get.to(TenantHomeDetails());
+                  Get.to(TenantHomeDetails(), arguments: [
+                    _about, //0
+                    _address, //1
+                    _sqft, //2
+                    _bathroom, //3
+                    _bedroom, //4
+                    _houseid, //5
+                    _images, //6
+                    _name, //7
+                    _rent, //8
+                    _uid, //9
+                    _latilong //10
+                  ]);
                 },
-                child: Text('View the house'),
+                child: Text('${_houseid}'),
+                // child: Text('View the house'),
               ),
             )
           ],
@@ -196,8 +273,6 @@ class HouseContainer extends StatelessWidget {
     );
   }
 }
-
-
 
 class FilterChip extends StatelessWidget {
   const FilterChip({Key? key, required Size size, required String text})
