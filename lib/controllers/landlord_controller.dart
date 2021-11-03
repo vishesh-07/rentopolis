@@ -12,6 +12,7 @@ import 'package:rentopolis/controllers/auth_controller.dart';
 import 'package:rentopolis/controllers/common_dialog.dart';
 import 'package:rentopolis/screens/landlord/landlord_home.dart';
 import 'package:rentopolis/screens/landlord/landlord_home_details.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class LandlordController extends GetxController {
   AuthController authController = Get.put(AuthController());
@@ -45,6 +46,22 @@ class LandlordController extends GetxController {
       uploadAbout = ''.obs;
   RxList _image = [].obs;
   ImagePicker picker = ImagePicker();
+  var selectedDateString = ''.obs;
+  Future<void> selectDate(BuildContext context) async {
+    selectedDateString.value = '';
+    final DateTime? picked = await showDatePicker(
+        context: context,
+        initialDate: DateTime.now(),
+        firstDate: DateTime.now(),
+        lastDate: DateTime(
+            DateTime.now().year, DateTime.now().month + 1, DateTime.now().day));
+    if (picked != null) {
+      selectedDateString.value = '${picked.day}/${picked.month}/${picked.year}';
+      update();
+      // print(selectedDate);
+    }
+  }
+
   @override
   void onInit() {
     nameController = TextEditingController();
@@ -54,7 +71,7 @@ class LandlordController extends GetxController {
     bathroomController = TextEditingController();
     areaController = TextEditingController();
     aboutController = TextEditingController();
-
+    selectedDateString = ''.obs;
     uploadNameController = TextEditingController();
     uploadRentController = TextEditingController();
     uploadAddressController = TextEditingController();
@@ -117,7 +134,10 @@ class LandlordController extends GetxController {
           await geoCode.forwardGeocoding(address: uploadAddress.value);
       var latilong = [coordinates.latitude, coordinates.longitude];
       try {
-        await FirebaseFirestore.instance.collection('houses').doc(rNum.toString()).set({
+        await FirebaseFirestore.instance
+            .collection('houses')
+            .doc(rNum.toString())
+            .set({
           'name': uploadName.value,
           'rent': uploadRent.value,
           'bedroom': uploadBedroom.value,
@@ -142,6 +162,73 @@ class LandlordController extends GetxController {
     // Get.to(LandlordHome());
   }
 
+  openTenantVerificationURL() async {
+    if (await canLaunch('https://citizen.mppolice.gov.in/Login.aspx')) {
+      await launch('https://citizen.mppolice.gov.in/Login.aspx');
+    } else {
+      CommanDialog.showErrorDialog(description: 'Invalid Url');
+      throw 'Error';
+    }
+  }
+
+  Future<void> giveHouseOnRent(
+    String landlordUid,
+    String houseId,
+    String appliedBy,
+    String name,
+    String phone,
+    String email,
+    String aadharFront,
+    String aadharBack,
+  ) async {
+    try {
+      CommanDialog.showLoading();
+      List imagedownloadurl = [];
+      var response = await FirebaseFirestore.instance
+          .collection('houses')
+          .doc(houseId)
+          .collection('tenant')
+          .get();
+      if (response.docs.length == 0) {
+        for (var img in _image) {
+          var ref = firebase_storage.FirebaseStorage.instance.ref().child(
+              'images/$landlordUid/$houseId/tenant/$appliedBy/${Path.basename(img.path)}');
+          await ref.putFile(img).whenComplete(() async {
+            await ref.getDownloadURL().then((value) async {
+              imagedownloadurl.add(value);
+            });
+          });
+        }
+        // for (var img in _image) {
+
+        FirebaseFirestore.instance
+            .collection('houses')
+            .doc(houseId)
+            .collection('tenant')
+            .doc()
+            .set({
+          'name': name,
+          'phone': phone,
+          'email': email,
+          'aadharFront': aadharFront,
+          'aadharBack': aadharBack,
+          'appliedBy': appliedBy,
+          'rentDate': selectedDateString.value,
+          'tenantVerificationCertificate': imagedownloadurl[0]
+        });
+
+        CommanDialog.hideLoading();
+        Get.back();
+      } else {
+        CommanDialog.showErrorDialog(description: 'House Already on Rent');
+        CommanDialog.hideLoading();
+      }
+    } catch (e) {
+      CommanDialog.showErrorDialog(description: '$e');
+      CommanDialog.hideLoading();
+    }
+  }
+
   @override
   void onClose() {
     name = ''.obs;
@@ -151,6 +238,7 @@ class LandlordController extends GetxController {
     bedroom = ''.obs;
     area = ''.obs;
     about = ''.obs;
+    selectedDateString.value = '';
     nameController.dispose();
     rentController.dispose();
     addressController.dispose();

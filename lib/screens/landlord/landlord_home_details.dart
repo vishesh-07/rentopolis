@@ -5,6 +5,7 @@ import 'package:rentopolis/config/configuration.dart';
 import 'package:rentopolis/controllers/internet_controller.dart';
 import 'package:rentopolis/controllers/landlord_controller.dart';
 import 'package:rentopolis/screens/landlord/landlord_update_details.dart';
+import 'package:rentopolis/screens/landlord/view_applied_tenants.dart';
 import 'package:rentopolis/screens/no_internet/no_internet.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:rentopolis/screens/tenant/tenant_rent_form.dart';
@@ -136,16 +137,33 @@ class LandlordHomeDetailsScreen extends StatelessWidget {
               SizedBox(
                 height: _size.height * .09,
               ),
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: SizedBox(
-                  width: _size.width * .8,
-                  child: ElevatedButton(
-                      onPressed: () {
-                        Get.to(LandlordUpdateDetails());
-                      },
-                      child: Text('Edit Details')),
-                ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: SizedBox(
+                      width: _size.width * .40,
+                      child: ElevatedButton(
+                          onPressed: () {
+                            Get.to(LandlordUpdateDetails());
+                          },
+                          child: Text('Edit Details')),
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: SizedBox(
+                      width: _size.width * .40,
+                      child: ElevatedButton(
+                          onPressed: () {
+                            Get.to(ViewAppliedTenants(),
+                                arguments: [_args[5].toString(), _args[9].toString()]);
+                          },
+                          child: Text('Intrested Tenanats')),
+                    ),
+                  ),
+                ],
               ),
             ],
           ),

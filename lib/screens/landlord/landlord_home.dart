@@ -52,6 +52,11 @@ class LandlordHomeScreen extends StatelessWidget {
                 onPressed: () {}, icon: SvgIcon('assets/icons/menu.svg')),
             IconButton(
                 onPressed: () {
+                  Get.offAll(LandlordHome());
+                },
+                icon: Icon(Icons.refresh)),
+            IconButton(
+                onPressed: () {
                   Get.to(LandlordUploadHome());
                 },
                 icon: Icon(Icons.add)),

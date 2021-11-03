@@ -42,7 +42,9 @@ class LandlordUploadHomeScreen extends StatelessWidget {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
-                  IconButton(onPressed: () {}, icon: Icon(Icons.arrow_back)),
+                  IconButton(onPressed: () {
+                    Get.back();
+                  }, icon: Icon(Icons.arrow_back)),
                   SizedBox(
                     width: _size.width * .15,
                   ),
