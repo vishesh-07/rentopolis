@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 import 'package:rentopolis/config/configuration.dart';
+import 'package:rentopolis/controllers/auth_controller.dart';
 import 'package:rentopolis/controllers/forget_password_controller.dart';
 import 'package:rentopolis/controllers/internet_controller.dart';
 import 'package:rentopolis/screens/no_internet/no_internet.dart';
@@ -16,19 +17,22 @@ class ForgetPassword extends StatelessWidget {
       body: GetBuilder<InternetController>(
           builder: (builder) => (_internetController.connectionType == 0.obs)
               ? const NoInternet()
-              :  ForgetPasswordWidget()),
+              : ForgetPasswordWidget()),
     );
   }
 }
 
 class ForgetPasswordWidget extends StatelessWidget {
-   ForgetPasswordWidget({
+  ForgetPasswordWidget({
     Key? key,
   }) : super(key: key);
-  ForgetPasswordController forgetPasswordController=Get.put(ForgetPasswordController());
+  ForgetPasswordController forgetPasswordController =
+      Get.put(ForgetPasswordController());
+  AuthController authController = Get.put(AuthController());
   @override
   Widget build(BuildContext context) {
     var _size = MediaQuery.of(context).size;
+    forgetPasswordController.email.value='';
     return SingleChildScrollView(
       reverse: true,
       child: Column(
@@ -75,7 +79,11 @@ class ForgetPasswordWidget extends StatelessWidget {
             width: _size.width * .8,
             height: _size.height * .07,
             child: ElevatedButton(
-              onPressed: () {},
+              onPressed: () {
+                // print(forgetPasswordController.email);
+                authController
+                    .resetPassword(forgetPasswordController.email.value.trim());
+              },
               child: Text(
                 'Reset Password',
                 style: mainFont(fontSize: 20, color: primaryWhite),

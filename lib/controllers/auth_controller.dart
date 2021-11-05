@@ -14,6 +14,7 @@ class AuthController extends GetxController {
   final firebaseInstance = FirebaseFirestore.instance;
   // DataController dataController=Get.put(DataController());
   // DataController dataController=DataController();
+  
   Future<void> signUp(email, password, name, phone, userType) async {
     try {
       CommanDialog.showLoading();
@@ -129,5 +130,17 @@ class AuthController extends GetxController {
         // print('Wrong password provided for that user.');
       }
     }
+  }
+
+  Future<void> resetPassword(String email) async {
+    await FirebaseAuth.instance
+        .sendPasswordResetEmail(email: email)
+        .then((value) {
+      Get.offAll(Login());
+      CommanDialog.showErrorDialog(
+          title: 'Success',
+          description: 'Password Reset email link is been sent');
+    }).catchError((onError) => CommanDialog.showErrorDialog(
+            title: 'Error', description: '${onError.message}'));
   }
 }

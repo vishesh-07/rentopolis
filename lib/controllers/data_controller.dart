@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:rentopolis/controllers/auth_controller.dart';
 import 'package:rentopolis/models/applied_house_model.dart';
+import 'package:rentopolis/models/current_tenant_model.dart';
 import 'package:rentopolis/models/house_model.dart';
 
 import 'common_dialog.dart';
@@ -13,6 +14,7 @@ class DataController extends GetxController {
   void onInit() {
     totalAppliedTenants=[];
     totalData = [];
+    currentTenant=[];
     markers = {};
     getUplodedHousesbyLandlord();
     super.onInit();
@@ -34,6 +36,7 @@ class DataController extends GetxController {
   void onClose() {
     totalAppliedTenants=[];
     totalData = [];
+    currentTenant=[];
     markers = {};
     super.onClose();
   }
@@ -50,6 +53,7 @@ class DataController extends GetxController {
   AuthController authController = Get.find();
   List<HouseModel> totalData = [];
   List<AppliedHouseModel>totalAppliedTenants=[];
+  List<CurrentTenantModel>currentTenant=[];
   Future<void> getUplodedHousesbyLandlord() async {
     print("loginUserData YEs ${totalData.length}");
     totalData = [];
@@ -167,6 +171,49 @@ class DataController extends GetxController {
         );
       }
       totalAppliedTenants.addAll(loadedAppliedTenants);
+      update();
+      CommanDialog.hideLoading();
+    } on FirebaseException catch (e) {
+      CommanDialog.hideLoading();
+      CommanDialog.showErrorDialog(description: '$e');
+      // print("Error $e");
+    } catch (error) {
+      CommanDialog.hideLoading();
+      
+       CommanDialog.showErrorDialog(description: '$error');
+    }
+  }
+
+  void getCurrentTenant(String houseId) async {
+    currentTenant = [];
+    try {
+      CommanDialog.showLoading();
+      final List<CurrentTenantModel> loadedCurrentTenant = [];
+      var response = await firebaseInstance
+          .collection('houses')
+          .doc(houseId)
+          .collection('tenant')
+          .get();
+      if (response.docs.length > 0) {
+        response.docs.forEach(
+          (result) {
+            print(result.data());
+            // print("Product ID  ${result.id}");
+            loadedCurrentTenant.add(
+              CurrentTenantModel(
+                  aadharBack: result['aadharBack'],
+                  aadharFront: result['aadharFront'],
+                  appliedBy: result['appliedBy'],
+                  email: result['email'],
+                  name: result['name'],
+                  phone: result['phone'],
+                  rentDate:result['rentDate'],
+                  tenantCertificate: result['tenantVerificationCertificate']),
+            );
+          },
+        );
+      }
+      currentTenant.addAll(loadedCurrentTenant);
       update();
       CommanDialog.hideLoading();
     } on FirebaseException catch (e) {

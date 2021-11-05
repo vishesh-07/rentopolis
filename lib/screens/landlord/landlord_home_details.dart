@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:rentopolis/config/configuration.dart';
 import 'package:rentopolis/controllers/internet_controller.dart';
 import 'package:rentopolis/controllers/landlord_controller.dart';
+import 'package:rentopolis/screens/landlord/current_tenant.dart';
 import 'package:rentopolis/screens/landlord/landlord_update_details.dart';
 import 'package:rentopolis/screens/landlord/view_applied_tenants.dart';
 import 'package:rentopolis/screens/no_internet/no_internet.dart';
@@ -143,7 +144,7 @@ class LandlordHomeDetailsScreen extends StatelessWidget {
                   Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: SizedBox(
-                      width: _size.width * .40,
+                      width: _size.width * .26,
                       child: ElevatedButton(
                           onPressed: () {
                             Get.to(LandlordUpdateDetails());
@@ -154,13 +155,29 @@ class LandlordHomeDetailsScreen extends StatelessWidget {
                   Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: SizedBox(
-                      width: _size.width * .40,
+                      width: _size.width * .26,
                       child: ElevatedButton(
                           onPressed: () {
-                            Get.to(ViewAppliedTenants(),
-                                arguments: [_args[5].toString(), _args[9].toString()]);
+                            Get.to(ViewAppliedTenants(), arguments: [
+                              _args[5].toString(),
+                              _args[9].toString()
+                            ]);
                           },
                           child: Text('Intrested Tenanats')),
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: SizedBox(
+                      width: _size.width * .26,
+                      child: ElevatedButton(
+                          onPressed: () {
+                            Get.to(CurrentTenant(), arguments: [
+                              _args[5].toString(),//houseId
+                              _args[9].toString()//uid
+                            ]);
+                          },
+                          child: Text('Current Tenanat')),
                     ),
                   ),
                 ],
