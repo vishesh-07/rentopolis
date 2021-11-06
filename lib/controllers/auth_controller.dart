@@ -14,7 +14,7 @@ class AuthController extends GetxController {
   final firebaseInstance = FirebaseFirestore.instance;
   // DataController dataController=Get.put(DataController());
   // DataController dataController=DataController();
-  
+
   Future<void> signUp(email, password, name, phone, userType) async {
     try {
       CommanDialog.showLoading();
@@ -36,7 +36,7 @@ class AuthController extends GetxController {
           'userType': userType
         });
         CommanDialog.hideLoading();
-        Get.offAll(Login());
+        Get.offAll(const Login());
       } catch (exception) {
         CommanDialog.hideLoading();
         print("Error Saving Data at firestore $exception");
@@ -92,9 +92,9 @@ class AuthController extends GetxController {
         userData['uid'] = response.docs[0]['uid'];
         userData['userType'] = response.docs[0]['userType'];
         if (userData['userType'] == 'Tenant') {
-          Get.offAll(TenantHome());
+          Get.offAll(const TenantHome());
         } else if (userData['userType'] == 'Landlord') {
-          Get.offAll(LandlordHome());
+          Get.offAll(const LandlordHome());
         }
       }
       print(userData);
@@ -132,11 +132,20 @@ class AuthController extends GetxController {
     }
   }
 
+  Future<void> signOut() async {
+    try {
+      await FirebaseAuth.instance.signOut();
+      Get.offAll(const Login());
+    } catch (e) {
+      CommanDialog.showErrorDialog(description: '$e');
+    }
+  }
+
   Future<void> resetPassword(String email) async {
     await FirebaseAuth.instance
         .sendPasswordResetEmail(email: email)
         .then((value) {
-      Get.offAll(Login());
+      Get.offAll(const Login());
       CommanDialog.showErrorDialog(
           title: 'Success',
           description: 'Password Reset email link is been sent');

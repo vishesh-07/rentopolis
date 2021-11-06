@@ -1,11 +1,13 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_zoom_drawer/flutter_zoom_drawer.dart';
 import 'package:get/get.dart';
 import 'package:rentopolis/config/configuration.dart';
 import 'package:rentopolis/controllers/auth_controller.dart';
 import 'package:rentopolis/controllers/data_controller.dart';
 import 'package:rentopolis/controllers/internet_controller.dart';
 import 'package:rentopolis/screens/no_internet/no_internet.dart';
+import 'package:rentopolis/screens/tenant/tenant_drawer.dart';
 import 'package:rentopolis/screens/tenant/tenant_home_details.dart';
 import 'package:rentopolis/widgets/custom_chipper.dart';
 import 'package:rentopolis/widgets/house_row_rent.dart';
@@ -21,9 +23,15 @@ class TenantHome extends StatelessWidget {
     return Scaffold(
       // body: Obx(()=>_internetController.current==_internetController.noInternet?NoInternet():LoginScreen()),
       body: GetBuilder<InternetController>(
-          builder: (builder) => (_internetController.connectionType == 0.obs)
-              ? const NoInternet()
-              : TenantHomeScreen()),
+        builder: (builder) => (_internetController.connectionType == 0.obs)
+            ? const NoInternet()
+            : ZoomDrawer(
+                style: DrawerStyle.Style2,
+                mainScreen: TenantHomeScreen(),
+                menuScreen: TenantDrawerScreen(),
+                showShadow: true,
+              ),
+      ),
     );
   }
 }
@@ -39,112 +47,123 @@ class TenantHomeScreen extends StatelessWidget {
       dataController.getUplodedHouses();
     });
     var _size = MediaQuery.of(context).size;
-    return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-      SizedBox(
-        height: _size.height * .01,
-      ),
-      Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            IconButton(
-                onPressed: () {}, icon: SvgIcon('assets/icons/menu.svg')),
-            IconButton(onPressed: () {}, icon: Icon(Icons.sort_sharp)),
-          ],
+    return Container(
+      height: _size.height,
+      width: _size.width,
+      color: primaryWhite,
+      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+        SizedBox(
+          height: _size.height * .01,
         ),
-      ),
-      Align(
-          alignment: Alignment.centerLeft,
-          child: Padding(
-            padding: const EdgeInsets.only(top: 8.0, left: 8.0),
-            child: Text('Hello ${authController.userData['name']}',
-                style: mainFont(fontSize: 20, color: primaryBlack)),
-          )),
-      Align(
-        alignment: Alignment.centerLeft,
-        child: Padding(
-          padding: const EdgeInsets.only(left: 8.0, top: 4.0),
-          child: Text(
-            'Find your sweet home',
-            style: mainFont(fontSize: 25, fontWeight: FontWeight.bold),
+        Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              IconButton(
+                  onPressed: () {
+                    ZoomDrawer.of(context)!.toggle();
+                  },
+                  icon: SvgIcon('assets/icons/menu.svg')),
+              IconButton(onPressed: () {}, icon: Icon(Icons.sort_sharp)),
+            ],
           ),
         ),
-      ),
-      SingleChildScrollView(
-        scrollDirection: Axis.horizontal,
-        child: Row(
-          children: [
-            FilterChip(
-              size: _size,
-              text: '2 Bedrooms',
+        Align(
+            alignment: Alignment.centerLeft,
+            child: Padding(
+              padding: const EdgeInsets.only(top: 8.0, left: 8.0),
+              child: Text('Hello ${authController.userData['name']}',
+                  style: mainFont(fontSize: 20, color: primaryBlack)),
+            )),
+        Align(
+          alignment: Alignment.centerLeft,
+          child: Padding(
+            padding: const EdgeInsets.only(left: 8.0, top: 4.0),
+            child: Text(
+              'Find your sweet home',
+              style: mainFont(fontSize: 25, fontWeight: FontWeight.bold),
             ),
-            FilterChip(
-              size: _size,
-              text: 'Independent House',
-            ),
-            FilterChip(
-              size: _size,
-              text: 'Full Furnished',
-            ),
-            FilterChip(
-              size: _size,
-              text: 'Under 15000',
-            ),
-            FilterChip(
-              size: _size,
-              text: 'Near Hospital',
-            ),
-          ],
+          ),
         ),
-      ),
-      GetBuilder<DataController>(
-        builder: (controller) => controller.totalData.isEmpty
-            ? Center(
-                child: Text('😔 NO DATA FOUND 😔'),
-              )
-            : Expanded(
-                child: ListView.builder(
-                    itemCount: dataController.totalData.length,
-                    itemBuilder: (context, index) {
-                      return Column(children: [
-                        HouseContainer(
-                          size: _size,
-                          images: dataController.totalData[index].images,
-                          name: dataController.totalData[index].name,
-                          rent: dataController.totalData[index].rent.toString(),
-                          bedroom: dataController.totalData[index].bedroom
-                              .toString(),
-                          bathroom: dataController.totalData[index].bathroom
-                              .toString(),
-                          sqft: dataController.totalData[index].area.toString(),
-                          about: dataController.totalData[index].about,
-                          address: dataController.totalData[index].address,
-                          houseid: dataController.totalData[index].houseid.toString(),
-                          uid: dataController.totalData[index].uid,
-                          latilong: dataController.totalData[index].latilong,
-                        ),
-                        // HouseContainer(
-                        //     size: _size,
-                        //     images: dataController.totalData[index].images,
-                        //     name: dataController.totalData[index].name,
-                        //     rent:
-                        //         dataController.totalData[index].rent.toString(),
-                        //     bedroom: dataController.totalData[index].bedroom
-                        //         .toString(),
-                        //     bathroom: dataController.totalData[index].bathroom
-                        //         .toString(),
-                        //     sqft:
-                        //         dataController.totalData[index].area.toString(),
-                        //     about: dataController.totalData[index].about,
-                        //     address: dataController.totalData[index].address,
-                        //     houseid: dataController.totalData[index].houseid,
-                        //     uid: dataController.totalData[index].uid),
-                      ]);
-                    }),
+        SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          child: Row(
+            children: [
+              FilterChip(
+                size: _size,
+                text: '2 Bedrooms',
               ),
-      ),
-    ]);
+              FilterChip(
+                size: _size,
+                text: 'Independent House',
+              ),
+              FilterChip(
+                size: _size,
+                text: 'Full Furnished',
+              ),
+              FilterChip(
+                size: _size,
+                text: 'Under 15000',
+              ),
+              FilterChip(
+                size: _size,
+                text: 'Near Hospital',
+              ),
+            ],
+          ),
+        ),
+        GetBuilder<DataController>(
+          builder: (controller) => controller.totalData.isEmpty
+              ? Center(
+                  child: Text('😔 NO DATA FOUND 😔'),
+                )
+              : Expanded(
+                  child: ListView.builder(
+                      itemCount: dataController.totalData.length,
+                      itemBuilder: (context, index) {
+                        return Column(children: [
+                          HouseContainer(
+                            size: _size,
+                            images: dataController.totalData[index].images,
+                            name: dataController.totalData[index].name,
+                            rent:
+                                dataController.totalData[index].rent.toString(),
+                            bedroom: dataController.totalData[index].bedroom
+                                .toString(),
+                            bathroom: dataController.totalData[index].bathroom
+                                .toString(),
+                            sqft:
+                                dataController.totalData[index].area.toString(),
+                            about: dataController.totalData[index].about,
+                            address: dataController.totalData[index].address,
+                            houseid: dataController.totalData[index].houseid
+                                .toString(),
+                            uid: dataController.totalData[index].uid,
+                            latilong: dataController.totalData[index].latilong,
+                          ),
+                          // HouseContainer(
+                          //     size: _size,
+                          //     images: dataController.totalData[index].images,
+                          //     name: dataController.totalData[index].name,
+                          //     rent:
+                          //         dataController.totalData[index].rent.toString(),
+                          //     bedroom: dataController.totalData[index].bedroom
+                          //         .toString(),
+                          //     bathroom: dataController.totalData[index].bathroom
+                          //         .toString(),
+                          //     sqft:
+                          //         dataController.totalData[index].area.toString(),
+                          //     about: dataController.totalData[index].about,
+                          //     address: dataController.totalData[index].address,
+                          //     houseid: dataController.totalData[index].houseid,
+                          //     uid: dataController.totalData[index].uid),
+                        ]);
+                      }),
+                ),
+        ),
+      ]),
+    );
   }
 }
 
@@ -179,8 +198,8 @@ class HouseContainer extends StatelessWidget {
 
   final Size _size;
   final List<dynamic> _images, _latilong;
-  final  _houseid;
-  final  _name, _rent, _bedroom, _bathroom, _sqft, _about, _address, _uid;
+  final _houseid;
+  final _name, _rent, _bedroom, _bathroom, _sqft, _about, _address, _uid;
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -263,8 +282,8 @@ class HouseContainer extends StatelessWidget {
                     _latilong //10
                   ]);
                 },
-                child: Text('${_houseid}'),
-                // child: Text('View the house'),
+                // child: Text('${_houseid}'),
+                child: Text('View the house'),
               ),
             )
           ],

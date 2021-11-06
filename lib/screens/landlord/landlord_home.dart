@@ -1,10 +1,12 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_zoom_drawer/flutter_zoom_drawer.dart';
 import 'package:get/get.dart';
 import 'package:rentopolis/config/configuration.dart';
 import 'package:rentopolis/controllers/auth_controller.dart';
 import 'package:rentopolis/controllers/data_controller.dart';
 import 'package:rentopolis/controllers/internet_controller.dart';
+import 'package:rentopolis/screens/landlord/landlord_drawer.dart';
 import 'package:rentopolis/screens/landlord/landlord_home_details.dart';
 import 'package:rentopolis/screens/landlord/landlord_upload_home.dart';
 import 'package:rentopolis/screens/no_internet/no_internet.dart';
@@ -22,9 +24,15 @@ class LandlordHome extends StatelessWidget {
     return Scaffold(
       // body: Obx(()=>_internetController.current==_internetController.noInternet?NoInternet():LoginScreen()),
       body: GetBuilder<InternetController>(
-          builder: (builder) => (_internetController.connectionType == 0.obs)
-              ? const NoInternet()
-              : LandlordHomeScreen()),
+        builder: (builder) => (_internetController.connectionType == 0.obs)
+            ? const NoInternet()
+            : ZoomDrawer(
+                style: DrawerStyle.Style2,
+                mainScreen: LandlordHomeScreen(),
+                menuScreen: LandlordDrawerScreen(),
+                showShadow: true,
+              ),
+      ),
     );
   }
 }
@@ -39,78 +47,86 @@ class LandlordHomeScreen extends StatelessWidget {
       dataController.getUplodedHousesbyLandlord();
     });
     var _size = MediaQuery.of(context).size;
-    return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-      SizedBox(
-        height: _size.height * .01,
-      ),
-      Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            IconButton(
-                onPressed: () {}, icon: SvgIcon('assets/icons/menu.svg')),
-            IconButton(
-                onPressed: () {
-                  Get.offAll(LandlordHome());
-                },
-                icon: Icon(Icons.refresh)),
-            IconButton(
-                onPressed: () {
-                  Get.to(LandlordUploadHome());
-                },
-                icon: Icon(Icons.add)),
-          ],
+    return Container(
+      height: _size.height,
+      width: _size.width,
+      color: primaryWhite,
+      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+        SizedBox(
+          height: _size.height * .01,
         ),
-      ),
-      Align(
-          alignment: Alignment.centerLeft,
-          child: Padding(
-            padding: const EdgeInsets.only(top: 8.0, left: 8.0),
-            child: Text('Hello ${authController.userData['name']}',
-                style: mainFont(fontSize: 20, color: primaryBlack)),
-          )),
-      Align(
-        alignment: Alignment.centerLeft,
-        child: Padding(
-          padding: const EdgeInsets.only(left: 8.0, top: 4.0),
-          child: Text(
-            'Your Homes',
-            style: mainFont(fontSize: 25, fontWeight: FontWeight.bold),
+        Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              IconButton(
+                  onPressed: () {
+                    ZoomDrawer.of(context)!.toggle();
+                  },
+                  icon: SvgIcon('assets/icons/menu.svg')),
+              IconButton(
+                  onPressed: () {
+                    Get.offAll(LandlordHome());
+                  },
+                  icon: Icon(Icons.refresh)),
+              IconButton(
+                  onPressed: () {
+                    Get.to(LandlordUploadHome());
+                  },
+                  icon: Icon(Icons.add)),
+            ],
           ),
         ),
-      ),
-      GetBuilder<DataController>(
-        builder: (controller) => controller.totalData.isEmpty
-            ? Center(
-                child: Text('😔 NO DATA FOUND PLEASE ADD DATA 😔'),
-              )
-            : Expanded(
-                child: ListView.builder(
-                    itemCount: dataController.totalData.length,
-                    itemBuilder: (context, index) {
-                      return Column(children: [
-                        HouseContainer(
-                            size: _size,
-                            images: dataController.totalData[index].images,
-                            name: dataController.totalData[index].name,
-                            rent:
-                                dataController.totalData[index].rent.toString(),
-                            bedroom: dataController.totalData[index].bedroom
-                                .toString(),
-                            bathroom: dataController.totalData[index].bathroom
-                                .toString(),
-                            sqft:
-                                dataController.totalData[index].area.toString(),
-                            about: dataController.totalData[index].about,
-                            address: dataController.totalData[index].address,
-                            houseid: dataController.totalData[index].houseid,
-                            uid: dataController.totalData[index].uid),
-                      ]);
-                    }),
-              ),
-      ),
-    ]);
+        Align(
+            alignment: Alignment.centerLeft,
+            child: Padding(
+              padding: const EdgeInsets.only(top: 8.0, left: 8.0),
+              child: Text('Hello ${authController.userData['name']}',
+                  style: mainFont(fontSize: 20, color: primaryBlack)),
+            )),
+        Align(
+          alignment: Alignment.centerLeft,
+          child: Padding(
+            padding: const EdgeInsets.only(left: 8.0, top: 4.0),
+            child: Text(
+              'Your Homes',
+              style: mainFont(fontSize: 25, fontWeight: FontWeight.bold),
+            ),
+          ),
+        ),
+        GetBuilder<DataController>(
+          builder: (controller) => controller.totalData.isEmpty
+              ? Center(
+                  child: Text('😔 NO DATA FOUND PLEASE ADD DATA 😔'),
+                )
+              : Expanded(
+                  child: ListView.builder(
+                      itemCount: dataController.totalData.length,
+                      itemBuilder: (context, index) {
+                        return Column(children: [
+                          HouseContainer(
+                              size: _size,
+                              images: dataController.totalData[index].images,
+                              name: dataController.totalData[index].name,
+                              rent: dataController.totalData[index].rent
+                                  .toString(),
+                              bedroom: dataController.totalData[index].bedroom
+                                  .toString(),
+                              bathroom: dataController.totalData[index].bathroom
+                                  .toString(),
+                              sqft: dataController.totalData[index].area
+                                  .toString(),
+                              about: dataController.totalData[index].about,
+                              address: dataController.totalData[index].address,
+                              houseid: dataController.totalData[index].houseid,
+                              uid: dataController.totalData[index].uid),
+                        ]);
+                      }),
+                ),
+        ),
+      ]),
+    );
   }
 }
 

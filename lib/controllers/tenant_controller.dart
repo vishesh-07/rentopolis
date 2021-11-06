@@ -25,6 +25,9 @@ class TenantController extends GetxController {
   ImagePicker picker = ImagePicker();
   AuthController authController = Get.put(AuthController());
   RxList _image = [].obs;
+  List<String> fav = ['Add to Favourites', 'Remove from Favourites'];
+  var isFav = false.obs;
+
   chooseImage() async {
     final pickedFile = await picker.pickImage(
       source: ImageSource.gallery,
@@ -80,5 +83,38 @@ class TenantController extends GetxController {
     }
 
     CommanDialog.hideLoading();
+  }
+
+  Future<void> addToFavourite(String uid, String houseId) async {
+    try {
+      var docId = FirebaseFirestore.instance.collection('favorites').doc().id;
+      await FirebaseFirestore.instance
+          .collection('favorites')
+          .doc(docId)
+          .set({'houseId': houseId, 'uid': uid, 'docId': docId});
+      isFav.value = true;
+      update();
+    } catch (e) {
+      CommanDialog.showErrorDialog(description: '$e');
+    }
+  }
+
+  Future<void> removeFromFavourite(String uid, String houseId) async {
+    try {
+      // isFavourite(uid, houseId);
+      var response = await FirebaseFirestore.instance
+          .collection('favorites')
+          .where('uid', isEqualTo: uid)
+          .where('houseId', isEqualTo: houseId)
+          .get();
+      await FirebaseFirestore.instance
+          .collection('favorites')
+          .doc(response.docs[0]['docId'])
+          .delete();
+      isFav.value = false;
+      update();
+    } catch (e) {
+      CommanDialog.showErrorDialog(description: '$e');
+    }
   }
 }
