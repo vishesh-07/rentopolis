@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
@@ -117,4 +118,33 @@ class TenantController extends GetxController {
       CommanDialog.showErrorDialog(description: '$e');
     }
   }
+
+  Future<void> reportLandlord(String uid) async {
+    try {
+      var response = await FirebaseFirestore.instance
+          .collection('reports')
+          .doc('reporting')
+          .collection('landlord')
+          .where('reportedBy', isEqualTo: authController.userId)
+          .where('reportedLandlord', isEqualTo: uid)
+          .get();
+      if (response.docs.isNotEmpty) {
+        CommanDialog.showErrorDialog(
+            title: 'Already Reported',
+            description: 'Landlord is already reported by you.');
+      } else {
+        FirebaseFirestore.instance
+            .collection('reports')
+            .doc('reporting')
+            .collection('landlord')
+            .doc()
+            .set(
+                {'reportedBy': authController.userId, 'reportedLandlord': uid});
+      }
+    } catch (e) {
+      CommanDialog.showErrorDialog(description: '$e');
+    }
+  }
+
+  
 }

@@ -6,16 +6,22 @@ import 'package:rentopolis/controllers/auth_controller.dart';
 import 'package:rentopolis/models/applied_house_model.dart';
 import 'package:rentopolis/models/current_tenant_model.dart';
 import 'package:rentopolis/models/house_model.dart';
+import 'package:rentopolis/models/reported_model.dart';
 
 import 'common_dialog.dart';
 
 class DataController extends GetxController {
   @override
   void onInit() {
-    totalAppliedTenants=[];
+    totalAppliedTenants = [];
     totalData = [];
-    currentTenant=[];
+    currentTenant = [];
+    totalFavoriteHouse = [];
     markers = {};
+    totalReportedTenants = [];
+    totalReportedLandlords = [];
+    totalReportedLandlordbyTenant=[];
+    totalReportedTenantbyLandlord=[];
     getUplodedHousesbyLandlord();
     super.onInit();
   }
@@ -34,9 +40,14 @@ class DataController extends GetxController {
 
   @override
   void onClose() {
-    totalAppliedTenants=[];
+    totalAppliedTenants = [];
     totalData = [];
-    currentTenant=[];
+    currentTenant = [];
+    totalFavoriteHouse = [];
+    totalReportedTenants = [];
+    totalReportedLandlords = [];
+    totalReportedLandlordbyTenant=[];
+    totalReportedTenantbyLandlord=[];
     markers = {};
     super.onClose();
   }
@@ -51,9 +62,10 @@ class DataController extends GetxController {
   // }
   final firebaseInstance = FirebaseFirestore.instance;
   AuthController authController = Get.find();
-  List<HouseModel> totalData = [];
-  List<AppliedHouseModel>totalAppliedTenants=[];
-  List<CurrentTenantModel>currentTenant=[];
+  List<HouseModel> totalData = [], totalFavoriteHouse = [];
+  List<AppliedHouseModel> totalAppliedTenants = [];
+  List<CurrentTenantModel> currentTenant = [];
+  List<ReportedModel> totalReportedTenants = [], totalReportedLandlords = [],totalReportedLandlordbyTenant=[],totalReportedTenantbyLandlord=[];
   Future<void> getUplodedHousesbyLandlord() async {
     print("loginUserData YEs ${totalData.length}");
     totalData = [];
@@ -179,8 +191,8 @@ class DataController extends GetxController {
       // print("Error $e");
     } catch (error) {
       CommanDialog.hideLoading();
-      
-       CommanDialog.showErrorDialog(description: '$error');
+
+      CommanDialog.showErrorDialog(description: '$error');
     }
   }
 
@@ -207,7 +219,7 @@ class DataController extends GetxController {
                   email: result['email'],
                   name: result['name'],
                   phone: result['phone'],
-                  rentDate:result['rentDate'],
+                  rentDate: result['rentDate'],
                   tenantCertificate: result['tenantVerificationCertificate']),
             );
           },
@@ -222,8 +234,270 @@ class DataController extends GetxController {
       // print("Error $e");
     } catch (error) {
       CommanDialog.hideLoading();
-      
-       CommanDialog.showErrorDialog(description: '$error');
+
+      CommanDialog.showErrorDialog(description: '$error');
+    }
+  }
+
+  Future<void> getFavoriteHouses() async {
+    totalFavoriteHouse = [];
+    try {
+      CommanDialog.showLoading();
+      final List<HouseModel> loadedFavoriteHouses = [];
+      var response = await firebaseInstance
+          .collection('favorites')
+          .where('uid', isEqualTo: authController.userId)
+          .get();
+
+      if (response.docs.length > 0) {
+        response.docs.forEach(
+          (result) async {
+            var res = await firebaseInstance
+                .collection('houses')
+                .where('houseid', isEqualTo: int.parse(result['houseId']))
+                .get();
+            if (res.docs.isNotEmpty) {
+              res.docs.forEach((ans) {
+                print(ans.data());
+                print("Product ID  ${ans.id}");
+                loadedFavoriteHouses.add(
+                  HouseModel(
+                    about: ans['about'],
+                    address: ans['address'],
+                    area: int.parse(ans['area']),
+                    bathroom: int.parse(ans['bathroom']),
+                    bedroom: int.parse(ans['bedroom']),
+                    houseid: ans['houseid'],
+                    images: ans['image'],
+                    name: ans['name'],
+                    rent: int.parse(ans['rent']),
+                    uid: ans['uid'],
+                    latilong: ans['latilong'],
+                  ),
+                );
+              });
+            }
+            totalFavoriteHouse.addAll(loadedFavoriteHouses);
+            update();
+          },
+        );
+      }
+
+      CommanDialog.hideLoading();
+    } on FirebaseException catch (e) {
+      CommanDialog.hideLoading();
+      print("Error $e");
+    } catch (error) {
+      CommanDialog.hideLoading();
+      print("error $error");
+    }
+  }
+
+  void getReportedTenant() async {
+    totalReportedTenants = [];
+    try {
+      CommanDialog.showLoading();
+      final List<ReportedModel> loadedReportedTenant = [];
+      var response = await firebaseInstance
+          .collection('reports')
+          .doc('reporting')
+          .collection('tenant')
+          .get();
+      if (response.docs.length > 0) {
+        response.docs.forEach(
+          (result) async {
+            var res = await firebaseInstance
+                .collection('users')
+                .where('uid', isEqualTo: result['reportedTenant'])
+                .get();
+            if (res.docs.isNotEmpty) {
+              res.docs.forEach((ans) {
+                print(ans.data());
+                print("Product ID  ${ans.id}");
+                loadedReportedTenant.add(
+                  ReportedModel(
+                      email: ans['email'],
+                      name: ans['name'],
+                      phone: ans['phone'],
+                      uid: ans['uid'],
+                      userType: ans['userType']),
+                );
+              });
+            }
+            totalReportedTenants.addAll(loadedReportedTenant);
+            update();
+          },
+        );
+      }
+      CommanDialog.hideLoading();
+    } on FirebaseException catch (e) {
+      CommanDialog.hideLoading();
+      CommanDialog.showErrorDialog(description: '$e');
+      // print("Error $e");
+    } catch (error) {
+      CommanDialog.hideLoading();
+
+      CommanDialog.showErrorDialog(description: '$error');
+    }
+  }
+
+  void getReportedLandlord() async {
+    totalReportedLandlords = [];
+    try {
+      CommanDialog.showLoading();
+      final List<ReportedModel> loadedReportedLandlords = [];
+      var response = await firebaseInstance
+          .collection('reports')
+          .doc('reporting')
+          .collection('landlord')
+          .get();
+      if (response.docs.length > 0) {
+        response.docs.forEach(
+          (result) async {
+            var res = await firebaseInstance
+                .collection('users')
+                .where('uid', isEqualTo: result['reportedLandlord'])
+                .get();
+            if (res.docs.isNotEmpty) {
+              res.docs.forEach((ans) {
+                print(ans.data());
+                print("Product ID  ${ans.id}");
+                loadedReportedLandlords.add(
+                  ReportedModel(
+                      email: ans['email'],
+                      name: ans['name'],
+                      phone: ans['phone'],
+                      uid: ans['uid'],
+                      userType: ans['userType']),
+                );
+              });
+            }
+            totalReportedLandlords.addAll(loadedReportedLandlords);
+            update();
+          },
+        );
+      }
+      CommanDialog.hideLoading();
+    } on FirebaseException catch (e) {
+      CommanDialog.hideLoading();
+      CommanDialog.showErrorDialog(description: '$e');
+      // print("Error $e");
+    } catch (error) {
+      CommanDialog.hideLoading();
+
+      CommanDialog.showErrorDialog(description: '$error');
+    }
+  }
+
+  void getPhoneNum(String uid) async {
+    var response = await FirebaseFirestore.instance
+        .collection('users')
+        .where('uid', isEqualTo: uid)
+        .get();
+    String phone = '';
+    if (response.docs.isNotEmpty) {
+      response.docs.forEach((result) {
+        phone = result['phone'];
+      });
+    }
+    authController.launchCaller(phone);
+  }
+
+  void getReportedLandlordbyTenant() async {
+    totalReportedLandlordbyTenant = [];
+    try {
+      CommanDialog.showLoading();
+      final List<ReportedModel> loadedReportedLandlordbyTenant = [];
+      var response = await firebaseInstance
+          .collection('reports')
+          .doc('reporting')
+          .collection('landlord')
+          .where('reportedBy', isEqualTo: authController.userId)
+          .get();
+      if (response.docs.length > 0) {
+        response.docs.forEach(
+          (result) async {
+            var res = await firebaseInstance
+                .collection('users')
+                .where('uid', isEqualTo: result['reportedLandlord'])
+                .get();
+            if (res.docs.isNotEmpty) {
+              res.docs.forEach((ans) {
+                print(ans.data());
+                print("Product ID  ${ans.id}");
+                loadedReportedLandlordbyTenant.add(
+                  ReportedModel(
+                      email: ans['email'],
+                      name: ans['name'],
+                      phone: ans['phone'],
+                      uid: ans['uid'],
+                      userType: ans['userType']),
+                );
+              });
+            }
+            totalReportedLandlordbyTenant.addAll(loadedReportedLandlordbyTenant);
+            update();
+          },
+        );
+      }
+      CommanDialog.hideLoading();
+    } on FirebaseException catch (e) {
+      CommanDialog.hideLoading();
+      CommanDialog.showErrorDialog(description: '$e');
+      // print("Error $e");
+    } catch (error) {
+      CommanDialog.hideLoading();
+
+      CommanDialog.showErrorDialog(description: '$error');
+    }
+  }
+
+  void getReportedTenantbyLandlord() async {
+    totalReportedTenantbyLandlord = [];
+    try {
+      CommanDialog.showLoading();
+      final List<ReportedModel> loadedReportedTenantbyLandlord = [];
+      var response = await firebaseInstance
+          .collection('reports')
+          .doc('reporting')
+          .collection('tenant')
+          .where('reportedBy', isEqualTo: authController.userId)
+          .get();
+      if (response.docs.length > 0) {
+        response.docs.forEach(
+          (result) async {
+            var res = await firebaseInstance
+                .collection('users')
+                .where('uid', isEqualTo: result['reportedTenant'])
+                .get();
+            if (res.docs.isNotEmpty) {
+              res.docs.forEach((ans) {
+                print(ans.data());
+                print("Product ID  ${ans.id}");
+                loadedReportedTenantbyLandlord.add(
+                  ReportedModel(
+                      email: ans['email'],
+                      name: ans['name'],
+                      phone: ans['phone'],
+                      uid: ans['uid'],
+                      userType: ans['userType']),
+                );
+              });
+            }
+            totalReportedTenantbyLandlord.addAll(loadedReportedTenantbyLandlord);
+            update();
+          },
+        );
+      }
+      CommanDialog.hideLoading();
+    } on FirebaseException catch (e) {
+      CommanDialog.hideLoading();
+      CommanDialog.showErrorDialog(description: '$e');
+      // print("Error $e");
+    } catch (error) {
+      CommanDialog.hideLoading();
+
+      CommanDialog.showErrorDialog(description: '$error');
     }
   }
 }

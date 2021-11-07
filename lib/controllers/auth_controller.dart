@@ -5,9 +5,11 @@ import 'package:get/get.dart';
 import 'package:rentopolis/controllers/common_dialog.dart';
 import 'package:rentopolis/controllers/data_controller.dart';
 import 'package:rentopolis/main.dart';
+import 'package:rentopolis/screens/admin/admin_home.dart';
 import 'package:rentopolis/screens/landlord/landlord_home.dart';
 import 'package:rentopolis/screens/login/login.dart';
 import 'package:rentopolis/screens/tenant/tenant_home.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class AuthController extends GetxController {
   var userId;
@@ -94,7 +96,7 @@ class AuthController extends GetxController {
         if (userData['userType'] == 'Tenant') {
           Get.offAll(const TenantHome());
         } else if (userData['userType'] == 'Landlord') {
-          Get.offAll(const LandlordHome());
+          Get.offAll(LandlordHome());
         }
       }
       print(userData);
@@ -107,15 +109,19 @@ class AuthController extends GetxController {
 
   Future<void> login(email, password) async {
     try {
-      CommanDialog.showLoading();
-      UserCredential userCredential = await FirebaseAuth.instance
-          .signInWithEmailAndPassword(email: email.trim(), password: password);
+      if (email == 'rentopolis@gmail.com' && password == 'admin@123') {
+        Get.offAll(AdminHome());
+      } else {
+        CommanDialog.showLoading();
+        UserCredential userCredential = await FirebaseAuth.instance
+            .signInWithEmailAndPassword(
+                email: email.trim(), password: password);
 
-      userId = userCredential.user!.uid;
-      CommanDialog.hideLoading();
-      getUserData();
-      // print(userData['userType']);
-
+        userId = userCredential.user!.uid;
+        getUserData();
+        // print(userData['userType']);
+        CommanDialog.hideLoading();
+      }
     } on FirebaseAuthException catch (e) {
       CommanDialog.hideLoading();
       if (e.code == 'user-not-found') {
@@ -124,6 +130,7 @@ class AuthController extends GetxController {
 
         // print('No user found for that email.');
       } else if (e.code == 'wrong-password') {
+        CommanDialog.hideLoading();
         CommanDialog.showErrorDialog(
             description: 'Wrong password provided for that user.');
 
@@ -151,5 +158,33 @@ class AuthController extends GetxController {
           description: 'Password Reset email link is been sent');
     }).catchError((onError) => CommanDialog.showErrorDialog(
             title: 'Error', description: '${onError.message}'));
+  }
+
+  Future<void> changePassword(String newPassword) async {
+    try {
+      CommanDialog.showLoading();
+      final FirebaseAuth firebaseAuth = FirebaseAuth.instance;
+      User? currentUser = firebaseAuth.currentUser;
+      await currentUser?.updatePassword(newPassword).then((_) {
+        Get.back();
+        CommanDialog.hideLoading();
+      }).catchError((err) {
+        CommanDialog.hideLoading();
+        CommanDialog.showErrorDialog(description: '$err');
+      });
+    } catch (e) {
+      CommanDialog.hideLoading();
+      CommanDialog.showErrorDialog(description: '$e');
+    }
+  }
+
+  launchCaller(String num) async {
+    String url = "tel:+91$num";
+    if (await canLaunch(url)) {
+      await launch(url);
+    } else {
+      CommanDialog.showErrorDialog(description: "Can't call");
+      throw 'Could not launch $url';
+    }
   }
 }

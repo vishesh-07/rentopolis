@@ -229,6 +229,33 @@ class LandlordController extends GetxController {
     }
   }
 
+  Future<void> reportTenant(String uid) async {
+    try {
+      var response = await FirebaseFirestore.instance
+          .collection('reports')
+          .doc('reporting')
+          .collection('tenant')
+          .where('reportedBy', isEqualTo: authController.userId)
+          .where('reportedTenant', isEqualTo: uid)
+          .get();
+      if (response.docs.isNotEmpty) {
+        CommanDialog.showErrorDialog(
+            title: 'Already Reported',
+            description: 'Tenant is already reported by you.');
+      } else {
+        FirebaseFirestore.instance
+            .collection('reports')
+            .doc('reporting')
+            .collection('tenant')
+            .doc()
+            .set(
+                {'reportedBy': authController.userId, 'reportedTenant': uid});
+      }
+    } catch (e) {
+      CommanDialog.showErrorDialog(description: '$e');
+    }
+  }
+
   @override
   void onClose() {
     name = ''.obs;

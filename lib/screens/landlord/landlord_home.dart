@@ -1,4 +1,5 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:double_back_to_close_app/double_back_to_close_app.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_zoom_drawer/flutter_zoom_drawer.dart';
 import 'package:get/get.dart';
@@ -23,15 +24,20 @@ class LandlordHome extends StatelessWidget {
         Get.put(InternetController());
     return Scaffold(
       // body: Obx(()=>_internetController.current==_internetController.noInternet?NoInternet():LoginScreen()),
-      body: GetBuilder<InternetController>(
-        builder: (builder) => (_internetController.connectionType == 0.obs)
-            ? const NoInternet()
-            : ZoomDrawer(
-                style: DrawerStyle.Style2,
-                mainScreen: LandlordHomeScreen(),
-                menuScreen: LandlordDrawerScreen(),
-                showShadow: true,
-              ),
+      body: DoubleBackToCloseApp(
+        snackBar: const SnackBar(
+          content: Text('Press back again to Exit'),
+        ),
+        child: GetBuilder<InternetController>(
+          builder: (builder) => (_internetController.connectionType == 0.obs)
+              ? const NoInternet()
+              : ZoomDrawer(
+                  style: DrawerStyle.Style2,
+                  mainScreen: LandlordHomeScreen(),
+                  menuScreen: LandlordDrawerScreen(),
+                  showShadow: true,
+                ),
+        ),
       ),
     );
   }

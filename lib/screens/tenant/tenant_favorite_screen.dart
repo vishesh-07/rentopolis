@@ -1,5 +1,4 @@
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:double_back_to_close_app/double_back_to_close_app.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_zoom_drawer/flutter_zoom_drawer.dart';
 import 'package:get/get.dart';
@@ -12,10 +11,11 @@ import 'package:rentopolis/screens/tenant/tenant_drawer.dart';
 import 'package:rentopolis/screens/tenant/tenant_home_details.dart';
 import 'package:rentopolis/widgets/custom_chipper.dart';
 import 'package:rentopolis/widgets/house_row_rent.dart';
+import 'package:rentopolis/widgets/text_with_back.dart';
 import 'package:svg_icon/svg_icon.dart';
 
-class TenantHome extends StatelessWidget {
-  const TenantHome({Key? key}) : super(key: key);
+class TenantFavoriteHouses extends StatelessWidget {
+  const TenantFavoriteHouses({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -23,34 +23,23 @@ class TenantHome extends StatelessWidget {
         Get.put(InternetController());
     return Scaffold(
       // body: Obx(()=>_internetController.current==_internetController.noInternet?NoInternet():LoginScreen()),
-      body: DoubleBackToCloseApp(
-        snackBar: const SnackBar(
-          content: Text('Press back again to Exit'),
-        ),
-        child: GetBuilder<InternetController>(
+      body: GetBuilder<InternetController>(
           builder: (builder) => (_internetController.connectionType == 0.obs)
               ? const NoInternet()
-              : ZoomDrawer(
-                  style: DrawerStyle.Style2,
-                  mainScreen: TenantHomeScreen(),
-                  menuScreen: TenantDrawerScreen(),
-                  showShadow: true,
-                ),
-        ),
-      ),
+              : TenantFavoriteHousesScreen()),
     );
   }
 }
 
-class TenantHomeScreen extends StatelessWidget {
-  TenantHomeScreen({Key? key}) : super(key: key);
+class TenantFavoriteHousesScreen extends StatelessWidget {
+  TenantFavoriteHousesScreen({Key? key}) : super(key: key);
   AuthController authController = Get.put(AuthController());
 
   final DataController dataController = Get.put(DataController());
   @override
   Widget build(BuildContext context) {
     WidgetsBinding.instance!.addPostFrameCallback((timeStamp) {
-      dataController.getUplodedHouses();
+      dataController.getFavoriteHouses();
     });
     var _size = MediaQuery.of(context).size;
     return Container(
@@ -59,78 +48,65 @@ class TenantHomeScreen extends StatelessWidget {
       color: primaryWhite,
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
         SizedBox(
-          height: _size.height * .01,
+          height: _size.height * .02,
         ),
-        Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: IconButton(
-              onPressed: () {
-                ZoomDrawer.of(context)!.toggle();
-              },
-              icon: const SvgIcon('assets/icons/menu.svg')),
-        ),
-        Align(
-            alignment: Alignment.centerLeft,
-            child: Padding(
-              padding: const EdgeInsets.only(top: 8.0, left: 8.0),
-              child: Text('Hello ${authController.userData['name']}',
-                  style: mainFont(fontSize: 20, color: primaryBlack)),
-            )),
-        Align(
-          alignment: Alignment.centerLeft,
-          child: Padding(
-            padding: const EdgeInsets.only(left: 8.0, top: 4.0),
-            child: Text(
-              'Find your sweet home',
-              style: mainFont(fontSize: 25, fontWeight: FontWeight.bold),
-            ),
-          ),
+      
+        TextWithBack(text: 'Favorites Houses', size: _size),
+        SizedBox(
+          width: _size.width * .1,
         ),
         GetBuilder<DataController>(
-          builder: (controller) => controller.totalData.isEmpty
-              ? const Center(
-                  child: const Text('😔 NO DATA FOUND 😔'),
+          builder: (controller) => controller.totalFavoriteHouse.isEmpty
+              ? Center(
+                  child: Text('😔 No Favorite Houses Found 😔'),
                 )
               : Expanded(
                   child: ListView.builder(
-                      itemCount: dataController.totalData.length,
+                      itemCount: dataController.totalFavoriteHouse.length,
                       itemBuilder: (context, index) {
                         return Column(children: [
                           HouseContainer(
                             size: _size,
-                            images: dataController.totalData[index].images,
-                            name: dataController.totalData[index].name,
-                            rent:
-                                dataController.totalData[index].rent.toString(),
-                            bedroom: dataController.totalData[index].bedroom
+                            images:
+                                dataController.totalFavoriteHouse[index].images,
+                            name: dataController.totalFavoriteHouse[index].name,
+                            rent: dataController.totalFavoriteHouse[index].rent
                                 .toString(),
-                            bathroom: dataController.totalData[index].bathroom
+                            bedroom: dataController
+                                .totalFavoriteHouse[index].bedroom
                                 .toString(),
-                            sqft:
-                                dataController.totalData[index].area.toString(),
-                            about: dataController.totalData[index].about,
-                            address: dataController.totalData[index].address,
-                            houseid: dataController.totalData[index].houseid
+                            bathroom: dataController
+                                .totalFavoriteHouse[index].bathroom
                                 .toString(),
-                            uid: dataController.totalData[index].uid,
-                            latilong: dataController.totalData[index].latilong,
+                            sqft: dataController.totalFavoriteHouse[index].area
+                                .toString(),
+                            about:
+                                dataController.totalFavoriteHouse[index].about,
+                            address: dataController
+                                .totalFavoriteHouse[index].address,
+                            houseid: dataController
+                                .totalFavoriteHouse[index].houseid
+                                .toString(),
+                            uid: dataController.totalFavoriteHouse[index].uid,
+                            latilong: dataController
+                                .totalFavoriteHouse[index].latilong,
                           ),
                           // HouseContainer(
                           //     size: _size,
-                          //     images: dataController.totalData[index].images,
-                          //     name: dataController.totalData[index].name,
+                          //     images: dataController.totalFavoriteHouse[index].images,
+                          //     name: dataController.totalFavoriteHouse[index].name,
                           //     rent:
-                          //         dataController.totalData[index].rent.toString(),
-                          //     bedroom: dataController.totalData[index].bedroom
+                          //         dataController.totalFavoriteHouse[index].rent.toString(),
+                          //     bedroom: dataController.totalFavoriteHouse[index].bedroom
                           //         .toString(),
-                          //     bathroom: dataController.totalData[index].bathroom
+                          //     bathroom: dataController.totalFavoriteHouse[index].bathroom
                           //         .toString(),
                           //     sqft:
-                          //         dataController.totalData[index].area.toString(),
-                          //     about: dataController.totalData[index].about,
-                          //     address: dataController.totalData[index].address,
-                          //     houseid: dataController.totalData[index].houseid,
-                          //     uid: dataController.totalData[index].uid),
+                          //         dataController.totalFavoriteHouse[index].area.toString(),
+                          //     about: dataController.totalFavoriteHouse[index].about,
+                          //     address: dataController.totalFavoriteHouse[index].address,
+                          //     houseid: dataController.totalFavoriteHouse[index].houseid,
+                          //     uid: dataController.totalFavoriteHouse[index].uid),
                         ]);
                       }),
                 ),
@@ -183,14 +159,13 @@ class HouseContainer extends StatelessWidget {
             borderRadius: BorderRadius.circular(20.0),
             // ignore: prefer_const_literals_to_create_immutables
             boxShadow: [
-              const BoxShadow(
-                  color: grey, blurRadius: 2.0, offset: const Offset(2.0, 2.0))
+              BoxShadow(color: grey, blurRadius: 2.0, offset: Offset(2.0, 2.0))
             ]),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             ClipRRect(
-              borderRadius: const BorderRadius.only(
+              borderRadius: BorderRadius.only(
                   topLeft: Radius.circular(20.0),
                   topRight: Radius.circular(20.0)),
               child: CachedNetworkImage(
@@ -242,7 +217,7 @@ class HouseContainer extends StatelessWidget {
               padding: const EdgeInsets.all(8.0),
               child: ElevatedButton(
                 onPressed: () {
-                  Get.to(const TenantHomeDetails(), arguments: [
+                  Get.to(TenantHomeDetails(), arguments: [
                     _about, //0
                     _address, //1
                     _sqft, //2
@@ -257,11 +232,48 @@ class HouseContainer extends StatelessWidget {
                   ]);
                 },
                 // child: Text('${_houseid}'),
-                child: const Text('View the house'),
+                child: Text('View the house'),
               ),
             )
           ],
         ),
+      ),
+    );
+  }
+}
+
+class FilterChip extends StatelessWidget {
+  const FilterChip({Key? key, required Size size, required String text})
+      : _size = size,
+        text = text,
+        super(key: key);
+
+  final Size _size;
+  final String text;
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Container(
+        constraints: BoxConstraints(
+          maxHeight: double.infinity,
+          minHeight: _size.height * .04,
+          minWidth: _size.width * .22,
+          maxWidth: double.infinity,
+        ),
+        child: Center(
+            child: Text(
+          text,
+          style: mainFont(
+              fontSize: 12, fontWeight: FontWeight.bold, color: darkGrey),
+        )),
+        decoration: BoxDecoration(
+            color: filterGrey,
+            borderRadius: BorderRadius.circular(5.0),
+            // ignore: prefer_const_literals_to_create_immutables
+            boxShadow: [
+              BoxShadow(color: grey, blurRadius: 2.0, offset: Offset(2.0, 2.0))
+            ]),
       ),
     );
   }

@@ -1,14 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:lottie/lottie.dart';
 import 'package:rentopolis/config/configuration.dart';
+import 'package:rentopolis/controllers/auth_controller.dart';
 import 'package:rentopolis/controllers/data_controller.dart';
 import 'package:rentopolis/controllers/internet_controller.dart';
-import 'package:rentopolis/controllers/landlord_controller.dart';
-import 'package:rentopolis/screens/landlord/tenant_verification.dart';
 import 'package:rentopolis/screens/no_internet/no_internet.dart';
+import 'package:rentopolis/widgets/text_with_back.dart';
 
-class ViewAppliedTenants extends StatelessWidget {
-  const ViewAppliedTenants({Key? key}) : super(key: key);
+class ReportedLandlord extends StatelessWidget {
+  const ReportedLandlord({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -19,20 +20,19 @@ class ViewAppliedTenants extends StatelessWidget {
       body: GetBuilder<InternetController>(
           builder: (builder) => (_internetController.connectionType == 0.obs)
               ? const NoInternet()
-              : ViewAppliedTenantsScreen()),
+              : ReportedLandlordScreen()),
     );
   }
 }
 
-class ViewAppliedTenantsScreen extends StatelessWidget {
-  ViewAppliedTenantsScreen({Key? key}) : super(key: key);
+class ReportedLandlordScreen extends StatelessWidget {
+  ReportedLandlordScreen({Key? key}) : super(key: key);
   final DataController dataController = Get.put(DataController());
-  final LandlordController landlordController = Get.put(LandlordController());
+  final AuthController authController = Get.put(AuthController());
   @override
   Widget build(BuildContext context) {
-    var _args = Get.arguments;
     WidgetsBinding.instance!.addPostFrameCallback((timeStamp) {
-      dataController.getAppliedTenants(_args[0]);
+      dataController.getReportedLandlord();
     });
     var _size = MediaQuery.of(context).size;
     return Column(
@@ -40,20 +40,15 @@ class ViewAppliedTenantsScreen extends StatelessWidget {
         SizedBox(
           height: _size.height * .05,
         ),
-        Center(
-          child: Text(
-            'Interested Tenants',
-            style: mainFont(fontSize: 25, fontWeight: FontWeight.bold),
-          ),
-        ),
+        TextWithBack(text: 'Reported Landlords', size: _size),
         GetBuilder<DataController>(
-          builder: (controller) => controller.totalAppliedTenants.isEmpty
+          builder: (controller) => controller.totalReportedLandlords.isEmpty
               ? Center(
-                  child: Text('😔 NO TENANTS FOUND😔'),
+                  child: Text('😔 NO LANDLORDS FOUND😔'),
                 )
               : Expanded(
                   child: ListView.builder(
-                      itemCount: dataController.totalAppliedTenants.length,
+                      itemCount: dataController.totalReportedLandlords.length,
                       itemBuilder: (context, index) {
                         return Column(children: [
                           Padding(
@@ -88,7 +83,7 @@ class ViewAppliedTenantsScreen extends StatelessWidget {
                                           padding: const EdgeInsets.all(8.0),
                                           child: Text(
                                               dataController
-                                                  .totalAppliedTenants[index]
+                                                  .totalReportedLandlords[index]
                                                   .name,
                                               style: mainFont(
                                                   fontSize: 15,
@@ -110,7 +105,7 @@ class ViewAppliedTenantsScreen extends StatelessWidget {
                                           padding: const EdgeInsets.all(8.0),
                                           child: Text(
                                               dataController
-                                                  .totalAppliedTenants[index]
+                                                  .totalReportedLandlords[index]
                                                   .email,
                                               style: mainFont(
                                                   fontSize: 12,
@@ -132,7 +127,7 @@ class ViewAppliedTenantsScreen extends StatelessWidget {
                                           padding: const EdgeInsets.all(8.0),
                                           child: Text(
                                               dataController
-                                                  .totalAppliedTenants[index]
+                                                  .totalReportedLandlords[index]
                                                   .phone,
                                               style: mainFont(
                                                   fontSize: 15,
@@ -141,88 +136,30 @@ class ViewAppliedTenantsScreen extends StatelessWidget {
                                       ]),
                                     ],
                                   ),
-                                  Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      Padding(
-                                        padding: const EdgeInsets.all(8.0),
-                                        child: ElevatedButton(
-                                          onPressed: () {
-                                            Get.to(TenantVerification(),
-                                                arguments: [
-                                                  dataController
-                                                      .totalAppliedTenants[
-                                                          index]
-                                                      .name, //0
-                                                  dataController
-                                                      .totalAppliedTenants[
-                                                          index]
-                                                      .phone, //1
-                                                  dataController
-                                                      .totalAppliedTenants[
-                                                          index]
-                                                      .email, //2
-                                                  dataController
-                                                      .totalAppliedTenants[
-                                                          index]
-                                                      .aadharFront, //3
-                                                  dataController
-                                                      .totalAppliedTenants[
-                                                          index]
-                                                      .aadharBack, //4
-                                                  dataController
-                                                      .totalAppliedTenants[
-                                                          index]
-                                                      .appliedBy, //5
-                                                  _args[0], //houseId //6
-                                                  _args[1] //uid  //7
-                                                ]);
-                                          },
-                                          child: Center(
-                                            child: Text(
-                                              'Rent The House',
-                                              style: mainFont(
-                                                  fontSize: 15,
-                                                  fontWeight: FontWeight.bold),
-                                            ),
-                                          ),
-                                          style: ElevatedButton.styleFrom(
-                                              primary: primaryWhite,
-                                              elevation: 10,
-                                              minimumSize: Size(
-                                                  _size.width * .4,
-                                                  _size.height * .05)),
+                                  Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: ElevatedButton(
+                                      onPressed: () {
+                                        authController.launchCaller(
+                                            dataController
+                                                .totalReportedLandlords[index]
+                                                .phone);
+                                      },
+                                      child: Center(
+                                        child: Text(
+                                          'Call Landlord',
+                                          style: mainFont(
+                                              fontSize: 15,
+                                              fontWeight: FontWeight.bold),
                                         ),
                                       ),
-                                      Padding(
-                                        padding: const EdgeInsets.all(8.0),
-                                        child: ElevatedButton(
-                                          onPressed: () {
-                                            // print(
-                                            // 'ten ${dataController.totalAppliedTenants[index].appliedBy} ');
-                                            landlordController.reportTenant(
-                                                dataController
-                                                    .totalAppliedTenants[index]
-                                                    .appliedBy);
-                                          },
-                                          child: Center(
-                                            child: Text(
-                                              'Report Tenant',
-                                              style: mainFont(
-                                                  fontSize: 15,
-                                                  fontWeight: FontWeight.bold),
-                                            ),
-                                          ),
-                                          style: ElevatedButton.styleFrom(
-                                              primary: primaryWhite,
-                                              elevation: 10,
-                                              minimumSize: Size(
-                                                  _size.width * .4,
-                                                  _size.height * .05)),
-                                        ),
-                                      ),
-                                    ],
-                                  )
+                                      style: ElevatedButton.styleFrom(
+                                          primary: primaryWhite,
+                                          elevation: 10,
+                                          minimumSize: Size(double.infinity,
+                                              _size.height * .05)),
+                                    ),
+                                  ),
                                 ],
                               ),
                             ),

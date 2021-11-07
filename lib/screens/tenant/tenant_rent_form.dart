@@ -7,6 +7,7 @@ import 'package:rentopolis/controllers/tenant_controller.dart';
 import 'package:rentopolis/screens/no_internet/no_internet.dart';
 import 'package:rentopolis/screens/tenant/tenant_home.dart';
 import 'package:rentopolis/screens/tenant/tenant_home_details.dart';
+import 'package:rentopolis/widgets/text_with_back.dart';
 
 class TenantRentForm extends StatelessWidget {
   const TenantRentForm({Key? key}) : super(key: key);
@@ -40,13 +41,7 @@ class TenantRentFormScreen extends StatelessWidget {
             SizedBox(
               height: _size.height * .08,
             ),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Text(
-                'Upload Aadhar card',
-                style: mainFont(fontSize: 20, fontWeight: FontWeight.bold),
-              ),
-            ),
+           TextWithBack(text: 'Upload Aadhar Card', size: _size),
             Padding(
               padding: const EdgeInsets.all(8.0),
               child: ElevatedButton(

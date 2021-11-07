@@ -10,6 +10,7 @@ import 'package:rentopolis/controllers/signup_controller.dart';
 import 'package:rentopolis/screens/no_internet/no_internet.dart';
 import 'package:rentopolis/widgets/edited_password_field.dart';
 import 'package:rentopolis/widgets/edited_text_field.dart';
+import 'package:rentopolis/widgets/text_with_back.dart';
 
 class Signup extends GetWidget<SignUpController> {
   Signup({Key? key}) : super(key: key);
@@ -49,25 +50,7 @@ class SignupWidget extends StatelessWidget {
             SizedBox(
               height: _size.height * .05,
             ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: <Widget>[
-                IconButton(
-                  icon: const Icon(Icons.arrow_back),
-                  onPressed: () {
-                    Get.back();
-                  },
-                  color: teal,
-                ),
-                Text(
-                  'Sign Up',
-                  style: mainFont(fontSize: 30, color: primaryBlack),
-                ),
-                SizedBox(
-                  width: _size.width * .1,
-                )
-              ],
-            ),
+            TextWithBack(text: 'SignUp', size: _size),
             SizedBox(
               height: _size.height * .3,
               child: Lottie.asset('assets/gif/signup.json'),
@@ -219,3 +202,4 @@ class SignupWidget extends StatelessWidget {
     );
   }
 }
+

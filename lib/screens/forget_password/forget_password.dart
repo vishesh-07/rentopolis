@@ -32,7 +32,7 @@ class ForgetPasswordWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     var _size = MediaQuery.of(context).size;
-    forgetPasswordController.email.value='';
+    forgetPasswordController.email.value = '';
     return SingleChildScrollView(
       reverse: true,
       child: Column(
@@ -61,8 +61,7 @@ class ForgetPasswordWidget extends StatelessWidget {
           ),
           SizedBox(
             height: _size.height * .27,
-            child: Lottie.network(
-                'https://assets6.lottiefiles.com/private_files/lf30_GjhcdO.json'),
+            child: Lottie.asset('assets/gif/forget_password.json'),
           ),
           EditedTextField(
             hintText: 'Enter Email ID',

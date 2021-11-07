@@ -190,7 +190,7 @@ class TenantHomeDetailsScreen extends StatelessWidget {
               Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: Container(
-                  height: _size.height * .3,
+                  height: _size.height * .2,
                   decoration:
                       BoxDecoration(borderRadius: BorderRadius.circular(20)),
                   child: GoogleMap(
@@ -211,11 +211,29 @@ class TenantHomeDetailsScreen extends StatelessWidget {
                   Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: SizedBox(
-                      width: _size.width * .4,
+                      width: _size.width * .2,
                       height: _size.height * .07,
                       child: ElevatedButton(
-                        onPressed: () {},
-                        child: const Text('Chat'),
+                        onPressed: () {
+                          dataController.getPhoneNum(_args[9]);
+                        },
+                        child: const Text('Call'),
+                      ),
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: SizedBox(
+                      width: _size.width * .2,
+                      height: _size.height * .07,
+                      child: ElevatedButton(
+                        onPressed: () {
+                          Get.to(const TenantRentForm(), arguments: [
+                            _args[5], //houseId
+                            _args[9] //uid
+                          ]);
+                        },
+                        child: const Text('Rent'),
                       ),
                     ),
                   ),
@@ -226,12 +244,9 @@ class TenantHomeDetailsScreen extends StatelessWidget {
                       height: _size.height * .07,
                       child: ElevatedButton(
                         onPressed: () {
-                          Get.to(const TenantRentForm(), arguments: [
-                            _args[5], //houseId
-                            _args[9] //uid
-                          ]);
+                          tenantController.reportLandlord(_args[9]);
                         },
-                        child: const Text('Rent'),
+                        child: const Text('Report Landlord'),
                       ),
                     ),
                   ),

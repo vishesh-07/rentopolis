@@ -1,12 +1,21 @@
+// ignore_for_file: prefer_const_constructors
+
 import 'package:flutter/material.dart';
+import 'package:flutter_zoom_drawer/flutter_zoom_drawer.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:rentopolis/config/configuration.dart';
 import 'package:rentopolis/controllers/auth_controller.dart';
+import 'package:rentopolis/controllers/data_controller.dart';
+import 'package:rentopolis/screens/admin/reported_landlord.dart';
+import 'package:rentopolis/screens/change_password/change_password.dart';
+import 'package:rentopolis/screens/tenant/reported_landlord_by_tenant.dart';
+import 'package:rentopolis/screens/tenant/tenant_favorite_screen.dart';
 
 class TenantDrawerScreen extends StatelessWidget {
   TenantDrawerScreen({Key? key}) : super(key: key);
   AuthController authController = Get.put(AuthController());
+  DataController dataController = Get.put(DataController());
   @override
   Widget build(BuildContext context) {
     var _size = MediaQuery.of(context).size;
@@ -31,21 +40,40 @@ class TenantDrawerScreen extends StatelessWidget {
             color: Colors.red,
             icon: Icons.favorite,
             size: _size,
-            onPressed: () {},
+            onPressed: () {
+              ZoomDrawer.of(context)!.toggle();
+              Get.to(TenantFavoriteHouses());
+              // dataController.getFavoriteHouses();
+            },
           ),
           CustomListTile(
             name: 'Reported Landlords',
             icon: Icons.report,
             color: teal,
             size: _size,
-            onPressed: () {},
+            onPressed: () {
+              ZoomDrawer.of(context)!.toggle();
+              Get.to(ReportedLandlordByTenant());
+            },
+          ),
+          CustomListTile(
+            name: 'Change Password',
+            icon: Icons.change_circle,
+            color: teal,
+            size: _size,
+            onPressed: () {
+              ZoomDrawer.of(context)!.toggle();
+              Get.to(ChangePassword());
+            },
           ),
           CustomListTile(
             name: 'Log Out',
             icon: Icons.logout_outlined,
             color: teal,
             size: _size,
-            onPressed: () {authController.signOut();},
+            onPressed: () {
+              authController.signOut();
+            },
           )
         ],
       ),

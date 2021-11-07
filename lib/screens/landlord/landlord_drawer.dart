@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_zoom_drawer/flutter_zoom_drawer.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:rentopolis/config/configuration.dart';
 import 'package:rentopolis/controllers/auth_controller.dart';
+import 'package:rentopolis/screens/change_password/change_password.dart';
+import 'package:rentopolis/screens/landlord/reported_tenant_by_landlord.dart';
 
 class LandlordDrawerScreen extends StatelessWidget {
   LandlordDrawerScreen({Key? key}) : super(key: key);
@@ -31,7 +34,20 @@ class LandlordDrawerScreen extends StatelessWidget {
             icon: Icons.report,
             color: teal,
             size: _size,
-            onPressed: () {},
+            onPressed: () {
+              ZoomDrawer.of(context)!.toggle();
+              Get.to(const ReportedTenantByLandlord());
+            },
+          ),
+          CustomListTile(
+            name: 'Change Password',
+            icon: Icons.change_circle,
+            color: teal,
+            size: _size,
+            onPressed: () {
+              ZoomDrawer.of(context)!.toggle();
+              Get.to(ChangePassword());
+            },
           ),
           CustomListTile(
             name: 'Log Out',
